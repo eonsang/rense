@@ -1,0 +1,191 @@
+{% extends './layout/base.njk' %}
+
+{% block content %}
+
+    <div class="container-fluid">
+
+        <!-- start page title -->
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box">
+                    <h4 class="page-title">{{ user.name }}님 상세정보</h4>
+                </div>
+            </div>
+        </div>
+        <!-- end page title -->
+
+        <div class="row">
+            <div class="col-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <div class="avatar-lg mx-auto rounded-circle bg-secondary">
+                                    {% if user.thumbnail %}
+                                    <img src="{{ user.thumbnail }}" class="rounded-circle img-thumbnail d-block"
+                                         style="object-fit: cover;width: 100%;height: 100%;"
+                                         alt="{{ user.name }}">
+                                    {% endif %}
+                                </div>
+                                <h4 class="mb-0 mt-2">{{ user.name }}</h4>
+                                <p class="text-muted font-14">{{ user.role }}</p>
+                                <hr>
+                                <div class="text-left mt-3">
+                                    <p class="text-muted mb-2 font-13">
+                                        <strong>Email :</strong>
+                                        <span class="ml-2">{{ user.email }}</span>
+                                    </p>
+                                    <p class="text-muted mb-2 font-13">
+                                        <strong>회원가입 일시 :</strong>
+                                        <span class="ml-2">{{ user.createdAt | date("YYYY-MM-DD HH:mm:ss") }}</span>
+                                    </p>
+                                    <p class="text-muted mb-2 font-13 mb-0">
+                                        <strong>마지막 로그인 일시 :</strong>
+                                        <span class="ml-2">{{ user.last_login | date("YYYY-MM-DD HH:mm:ss") }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form action="" method="POST">
+                            <input type="hidden" name="id" value="{{ user.id }}">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="nickname">상호명</label>
+                                        <input type="text" class="form-control" id="companyName" value="{{ user.companyName }}" name="companyName" placeholder="닉네임" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="nickname">사업자 번호</label>
+                                        <input type="text" class="form-control" id="companyCode" value="{{ user.companyCode }}" name="companyCode" placeholder="사업자 번호" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="nickname">사업장 주소</label>
+                                        <input type="text" class="form-control" id="companyAddr" value="[{{ user.companyAddrCode }}] {{ user.companyAddr1 }} {{ user.companyAddr2 }} {{ user.companyAddr3 }}" name="companyAddr" placeholder="사업장 주소" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="col-12" style="display: none;">
+                                    <div class="form-group">
+                                        <label for="nickname">닉네임</label>
+                                        <input type="text" class="form-control" id="nickname" value="{{ user.nickname }}" name="nickname" placeholder="닉네임">
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="number">연락처</label>
+                                        <input type="text" class="form-control" id="number" placeholder="number" value="{{ user.number }}" name="연락처">
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="number">권한</label>
+                                        <select name="role" id="role" class="form-control" >
+                                            <option value="user" {% if user.role == 'user' %} selected {% endif %}>user</option>
+                                            <option value="manager" {% if user.role == 'manager' %} selected {% endif %}>manager</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <h5 class="mb-3 text-uppercase bg-light p-2">비밀번호 변경</h5>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="password">변경할 비밀번호</label>
+                                        <input type="password" class="form-control" id="password" name="password" value="" placeholder="변경할 비밀번호">
+                                        <small>비밀번호를 변경하지 않으시려면 비워주세요.</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="checkPassword">변경할 비밀번호 확인</label>
+                                        <input type="password" class="form-control" id="checkPassword" name="checkPassword" value="" placeholder="변경할 비밀번호 확인">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <button type="submit" class="btn btn-success mt-2"><i class="mdi mdi-content-save"></i> 수정</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="header-title my-2">주문 내역</h4>
+                        <div class="table-responsive">
+                            <table class="table table-centered table-nowrap table-hover mb-0">
+                                <tbody>
+                                {% if user.Orders | length %}
+                                    {% for order in user.Orders %}
+                                    <tr>
+                                        <td>
+                                            <h5 class="font-14 my-1 font-weight-normal">{{ order.id }}</h5>
+                                            <span class="text-muted font-13">주문 번호</span>
+                                        </td>
+                                        <td>
+                                            <h5 class="font-14 my-1 font-weight-normal">
+                                                <img src="{{ order.Carts[0].ProductOptionDetail.path }}" alt="" style="width: 60px;">
+                                            </h5>
+                                        </td>
+                                        <td>
+                                            <h5 class="font-14 my-1 font-weight-normal">
+                                                <a href="/adm/order/detail/{{ order.id }}">
+                                                    {{ order.Carts[0].Product.name }} 등
+                                                </a>
+                                            </h5>
+                                            <span class="text-muted font-13">제품 명</span>
+                                        </td>
+                                        <td>
+                                            <h5 class="font-14 my-1 font-weight-normal">{{ order.createdAt|date("YYYY-MM-DD") }}</h5>
+                                            <span class="text-muted font-13">주문 일시</span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">주문내역이 없습니다.</td>
+                                    </tr>
+                                {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- end table-responsive-->
+                    </div>
+                </div> <!-- end card -->
+                <!-- Messages-->
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="header-title my-2">QnA</h4>
+                        <div class="inbox-widget">
+                            {% if user.Orders | length %}
+                                {% for qna in user.Qnas %}
+                                <div class="inbox-item">
+                                    <p class="inbox-item-author">{{ qna.title }}</p>
+                                    <p class="inbox-item-text">{{ qna.content }}</p>
+                                    <p class="inbox-item-date">
+                                        <a href="/adm/qna/detail/{{ qna.id }}" class="btn btn-sm btn-link text-info font-13">자세히 보기</a>
+                                    </p>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-center">등록된 QnA가 없습니다.</p>
+                            {% endif %}
+                        </div> <!-- end inbox-widget -->
+                    </div> <!-- end card-body-->
+                </div> <!-- end card-->
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+{% endblock %}

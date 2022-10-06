@@ -1,0 +1,43 @@
+.pop {
+  @apply shadow fixed left-0 top-0 w-full h-full items-center justify-center;
+  z-index: 9999;
+  background: rgba(0,0,0,.2);
+  display: none;
+  &.active {
+    display: flex;
+  }
+
+  .pop-content {
+    width: 100%;
+    max-width: 700px;
+    padding: 50px 10px 10px;
+    background:#fff;
+    position: relative;
+    max-height: 100%;
+    overflow: auto;
+    h2 {
+      position: absolute;
+      left: 10px;
+      top: 0;
+      line-height: 50px;
+      font-size:1.125rem;
+    }
+    button {
+      position: absolute;
+      right: 0px;
+      top: 0;
+      width: 50px;
+      height: 50px;
+      background: url('../../images/icon-x.png') no-repeat center;
+      background-size: auto 20px;
+      text-indent: -9999px;
+      overflow: hidden;
+    }
+    .text {
+      font-size: 14px;
+      color:#666;
+      line-height: 1.5em;
+      margin-top: 1em;
+    }
+  }
+}

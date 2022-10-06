@@ -1,0 +1,64 @@
+{% extends 'layout/base.njk' %}
+
+{% block style %}
+    <style>
+        @media screen and (max-width: 460px) {
+            .board__table colgroup col:nth-child(3),
+            .board__table th:nth-child(3),
+            .board__table td:nth-child(3) {
+                display: none;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {% include 'layout/header.njk' %}
+    <div class="container">
+        <div class="board">
+            <div class="wrap">
+                <h1 class="board__title">공지사항</h1>
+                {% if objects | length %}
+                    {{ message }}
+                    <div class="board__table">
+                        <table>
+                            <colgroup>
+                                <col width="50">
+                                <col>
+                                <col width="100">
+                                <col width="80">
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th>번호</th>
+                                <th>제목</th>
+                                <th>작성자</th>
+                                <th>작성일</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for object in objects %}
+                                <tr>
+                                    <td>{{ object.id }}</td>
+                                    <td>
+                                        <a href="/board/{{ boardName }}/{{ object.id }}">
+                                            {{ object.subject }}
+                                        </a>
+                                    </td>
+                                    <td>{{ object.User.name }}</td>
+                                    <td>{{ object.createdAt | date("YY.MM.DD") }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-center py-20 mx-auto">등록된 {{ boardName }}이 없습니다.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% include 'layout/footer.njk' %}
+
+{% endblock %}
+

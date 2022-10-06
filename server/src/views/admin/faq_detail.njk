@@ -1,0 +1,234 @@
+{% extends './layout/base.njk' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <h4 class="page-title">1:1 문의 관리</h4>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-9">
+            <div class="card">
+                <form action="" method="POST" enctype="multipart/form-data" id="form">
+                    <div class="card-body">
+                        <h4 class="header-title">{{ object.User.name }} 회원님 문의내용</h4>
+                        <p class="text-muted font-14 mb-3">
+                            문의 내용입니다.
+                        </p>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="title">제목</label>
+                                    <input type="text" class="form-control" id="title" placeholder="제목" name="title" value="{{ object.title }}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="form-group">
+                                    <label for="">비밀글</label>
+                                    <div class="custom-checkbox mt-1">
+                                        <input type="checkbox" id="is_secret" name="is_secret" {% if object.is_secret %} checked {% endif %} data-switch="primary"/>
+                                        <label for="is_active" data-on-label="On" data-off-label="Off"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label id="createdAt">작성일</label>
+                                    <input type="datetime-local" class="form-control " id="createdAt" value="{{ (object.createdAt | date).slice(0, 16) }}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label id="createdAt">답변 수신 여부</label>
+
+                                    <div class="form-group">
+                                        <div class="d-flex pt-1">
+                                            <div class="custom-control custom-checkbox mr-2">
+                                                <input type="checkbox" class="custom-control-input" id="customCheck1" {% if object.receive_email %} checked {% endif %} disabled>
+                                                <label class="custom-control-label" for="customCheck1">이메일</label>
+                                            </div>
+
+                                            <div class="custom-control custom-checkbox mr-2">
+                                                <input type="checkbox" class="custom-control-input" id="customCheck1" {% if object.receive_sms %} checked {% endif %} disabled>
+                                                <label class="custom-control-label" for="customCheck1">SMS</label>
+                                            </div>
+
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="customCheck1" {% if object.receive_talk %} checked {% endif %} disabled>
+                                                <label class="custom-control-label" for="customCheck1">카카오</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="example-textarea">문의내용</label>
+                                    <div id="" class="textEditor"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group pt-2">
+                                    <label for="example-textarea">답변내용</label>
+                                    <div id="" class="textEditor"></div>
+                                </div>
+                            </div>
+                        </div>
+                        {% if object.reply_datetime %}
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label id="reply_datetime">답변일</label>
+                                        <input type="datetime-local" class="form-control " id="reply_datetime" value="{{ (object.reply_datetime | date).slice(0, 16) }}" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="mt-3 d-flex">
+                            <a href="/adm/qna" class="btn btn-secondary">뒤로가기</a>
+                            <button type="button" id="delete" class="btn btn-danger ml-auto mr-1">삭제</button>
+                            <button type="submit" class="btn btn-primary">저장</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <div class="avatar-lg mx-auto rounded-circle bg-secondary">
+                                {% if object.User.thumbnail %}
+                                    <img src="{{ object.User.thumbnail }}" class="rounded-circle img-thumbnail d-block"
+                                         style="object-fit: cover;width: 100%;height: 100%;"
+                                         alt="{{ object.User.name }}">
+                                {% endif %}
+                            </div>
+                            <h4 class="mb-0 mt-2">{{ object.User.name }}</h4>
+                            <p class="text-muted font-14">{{ object.User.role }}</p>
+                            <hr>
+                            <div class="text-left mt-3">
+                                <p class="text-muted mb-2 font-13">
+                                    <strong>Email :</strong>
+                                    <span class="ml-2">{{ object.User.email }}</span>
+                                </p>
+                                <p class="text-muted mb-2 font-13">
+                                    <strong>회원가입 일시 :</strong>
+                                    <span class="ml-2">{{ object.User.createdAt | date("YYYY-MM-DD HH:mm:ss") }}</span>
+                                </p>
+                                <p class="text-muted mb-2 font-13 mb-0">
+                                    <strong>마지막 로그인 일시 :</strong>
+                                    <span class="ml-2">{{ object.User.last_login | date("YYYY-MM-DD HH:mm:ss") }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="nickname">닉네임</label>
+                                <input type="text" class="form-control" id="nickname" value="{{ object.User.nickname }}" name="nickname" placeholder="닉네임" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="number">연락처</label>
+                                <input type="text" class="form-control" id="number" placeholder="number" value="{{ object.User.number }}" name="연락처" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="number">권한</label>
+                                <select name="role" id="role" class="form-control" disabled>
+                                    <option value="user" {% if object.User.role == 'user' %} selected {% endif %}>user</option>
+                                    <option value="manager" {% if object.User.role == 'manager' %} selected {% endif %}>manager</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block css %}
+    <link href="/static/admin/css/vendor/summernote-bs4.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block script %}
+    <script src="/static/admin/js/vendor/summernote-bs4.min.js"></script>
+    <script src="/static/admin/js/vendor/summernote-ko-KR.min.js"></script>
+    <script>
+      $(function(){
+        $(".textEditor").summernote({
+          lang: 'ko-KR',
+          placeholder: "",
+          height: 300,
+          callbacks: {
+            onImageUpload: function(files) {
+              for (var i = 0; i <= files.length - 1; i++) {
+                singleUpload(files[i], this);
+              }
+            }
+          }
+        });
+        $('.textEditor').eq(0).summernote('code', `{{ object.content | safe }}`)
+        $('.textEditor').eq(1).summernote('code', `{{ object.reply_content | safe }}`);
+
+
+        $('#form').submit(function(e) {
+          e.preventDefault();
+          var reply_content = $('.textEditor').eq(1).summernote('code');
+          $.ajax({
+            type: 'POST',
+            data: {
+              reply_content: reply_content,
+              reply_datetime: new Date(),
+            },
+            url: '/adm/qna/update/{{ object.id }}',
+          }).done(function(data){
+            if(data.success === true) {
+              alert('답변 내용이 입력/수정 되었습니다.');
+              location.reload();
+            } else {
+              alert('답변 내용이 수정 실패');
+            }
+          }).fail(function(error) {
+            console.error(error);
+          })
+        });
+        $('#delete').on('click', function(){
+          if(confirm('삭제 하시겠습니까?')) {
+            $.ajax({
+              url: '/adm/qna/remove/{{ object.id }}',
+              type: 'post',
+            }).done(function(res) {
+              if(res.success) {
+                alert('삭제 되었습니다.')
+                location.href = '/adm/qna'
+              }
+            })
+          }
+        })
+      })
+    </script>
+{% endblock %}

@@ -1,0 +1,61 @@
+<div class="detailOptions" id="detailOptions" style="display: none;">
+    <input type="hidden" name="totalPrice" id="totalPrice" value="0">
+    <input type="hidden" name="totalCount" id="totalCount" value="0">
+    <div class="detailOptions__content">
+        <button class="close" onclick="$('#detailOptions').hide();$('#addCartbutton').remove();">닫기</button>
+        <div class="row">
+            <div class="col optionlist">
+                <div class="flex flex-wrap" id="optionlist">
+                    <!--
+                    <div class="optionlist__item">
+                        <div class="optionlist__header">
+                            <h3>C001.01 블랙</h3>
+                            <button>장바구니</button>
+                        </div>
+                        <div class="optionlist__thumb">
+                            <img src="/static/images/dummy-img.png" alt="">
+                        </div>
+                    </div>
+                    -->
+                </div>
+            </div>
+            <div class="col cartlist">
+                <div class="cartlist__title">
+                    장바구니
+                </div>
+                <div class="reglist" id="reglist">
+                    <!--
+                    <div class="reglist__item">
+                        <div class="info">
+                            <h3>KM-5001 col 01옐로우골드 유광</h3>
+                            <p>칠보-블랙 무광</p>
+                        </div>
+                        <div class="form">
+                            <button>-</button>
+                            <input type="text" value="0">
+                            <button>+</button>
+                        </div>
+                    </div>
+                    -->
+                </div>
+                <div class="total">
+                    <div class="total__info">
+                        <div class="row">
+                            <strong>총 수량</strong>
+                            <div class="result"><span id="optionCount">0</span>개</div>
+                        </div>
+                        <div class="row">
+                            <strong>총 상품금액</strong>
+                            <div class="result"><span id="optionTotalPrice">0</span>원</div>
+                        </div>
+                    </div>
+
+                    <div class="btnboxes flex">
+{#                        <button id="addCartbutton" class="submit mr-1 addOption" style="background:#1b1be4;display: none;">장바구니 담기</button>#}
+                        <button class="submit" onclick="location.href='/cart';">장바구니 바로가기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

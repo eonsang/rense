@@ -1,0 +1,40 @@
+.mainPopup {
+  position: fixed;
+  z-index: 9000;
+  display: none;
+
+  @media screen and (max-width: 1024px) {
+    left: 0 !important;
+    top: 0 !important;
+    padding: 10px !important;
+  }
+
+  .mainPopup__content {
+    display: block;
+    @apply shadow-lg;
+  }
+
+  .mainPopup__body {
+    a {
+      @apply block;
+    }
+    img {
+      @apply block;
+      vertical-align: top;
+    }
+  }
+  .mainPopup__footer {
+    @apply flex bg-gray-800;
+    a {
+      @apply flex-1 text-center text-white text-sm;
+      line-height: 45px;
+      @media screen and (max-width: 1024px) {
+        line-height: 40px;
+      }
+
+      &:first-child {
+        @apply border-r border-white;
+      }
+    }
+  }
+}

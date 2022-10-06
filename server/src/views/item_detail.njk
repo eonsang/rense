@@ -1,0 +1,173 @@
+{% extends 'layout/base.njk' %}
+
+{% block content %}
+{% include 'layout/header.njk' %}
+    <div class="container">
+        <div class="wrap">
+            <div class="itemLayout">
+                <div class="itemLayout__top">
+                    <div class="thumb ">
+                        <div class="slider-for">
+                        {% for thumb in product.ProductImages %}
+                            <div>
+                                <img src="/{{ thumb.path }}" alt="">
+                            </div>
+                        {% endfor %}
+                        </div>
+                        <div class="slider-nav">
+                            {% for thumb in product.ProductImages %}
+                                <div class="slider-nav-item">
+                                    <img src="/{{ thumb.path }}" alt="">
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="info">
+                        <form action="" method="post">
+                            <div class="category">
+                                {% for category in product.Categories %}
+                                    {{ category.name }}
+                                    {% if not loop.last %}
+                                        /
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <h2 class="item-title">{{ product.name }}</h2>
+                            <ul class="item-info-list">
+                                <li>
+                                    제조사 <span>{{ product.maker }}</span>
+                                </li>
+                                <li>
+                                    원산지 <span>{{ product.origin }}</span>
+                                </li>
+                                <li>
+                                    브랜드 <span>{{ product.brand }}</span>
+                                </li>
+                                <li>
+                                    모델 <span>{{ product.model }}</span>
+                                </li>
+                                <li>
+                                    가격 <span class="item-price">{{ product.customer_price | comma }}원 <del>{{ product.price | comma }}원</del></span>
+                                </li>
+                            </ul>
+
+                            <p class="item-description">
+                                <strong>상품 소개</strong>
+                                {{ product.description }}
+                            </p>
+                            <style>
+                                .input {
+                                    height: 40px;
+                                    border: 1px solid #ddd;
+                                    padding: 0 10px;
+                                    width: 100%;
+                                }
+                            </style>
+                            <div class="item-options">
+                                <div class="item-options-detail">
+                                    <strong>수량</strong>
+                                    <div class="list-search">
+                                        <input type="number" class="input" value="1" name="quantity">
+                                    </div>
+                                </div>
+                                {% for option in product.ProductOptions %}
+                                    <div class="item-options-detail">
+                                        <strong>{{ option.name }}</strong>
+                                        <div class="list-search">
+                                            <div class="select">
+                                                <select name="{{ option.id }}" id="">
+                                                    {% for detailOption in option.ProductOptionDetails %}
+                                                        <option
+                                                                value="{{ detailOption.id }}"
+                                                                {% if detailOption.sold_out %} disabled {% endif %}
+
+                                                        >
+                                                        {{ detailOption.name }} 
+                                                        {# (+{{ detailOption.price }}) #}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="item-buttons">
+                                <a href="/" class="btn">목록</a>
+                                <button class="btn submit" type="submit">예약하기</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="item-contents">
+                    {{ product.content | safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% include 'layout/footer.njk' %}
+{% endblock %}
+
+{% block style %}
+<style>
+    .item-contents {border-top: 1px solid #ddd;margin-top: 20px;padding-top: 20px;}
+    .item-buttons {display: flex;align-items: center;margin-top: 20px;}
+    .item-buttons .btn {width: 120px;text-align: center;line-height: 45px;background: #eee;color: #000;}
+    .item-buttons .btn:first-child {margin-right: 10px;}
+    .item-buttons .btn.submit {background:#FAD503;flex: 1;}
+
+
+    .itemLayout {max-width:1000px;margin:0 auto;padding: 3em 0;}
+    .itemLayout__top {display: flex;align-content: flex-start;}
+    .itemLayout__top .thumb {width: 50%;flex: none;}
+    .itemLayout__top .info {flex: 1;margin-left: 2em;}
+    .itemLayout__top .info .category{color:#999;font-size: 14px;}
+    @media screen and (max-width: 768px) {
+        .itemLayout__top {display: block;}
+        .itemLayout__top .thumb {width: 100%;}
+        .itemLayout__top .info {flex: 1;margin-left:0;margin-top: 20px;}
+    }
+
+    .item-title {font-size: 1.5rem;font-weight: 600;}
+    .item-info-list {color:#999;font-size: 1rem;margin-top: 1em;}
+    .item-info-list li{margin-top: .5em;font-size: 14px;}
+    .item-info-list span {color:#000;font-size: 16px;}
+    .item-description{padding: 1em;border-radius: .5em;background: rgba(0,0,0,0.05);font-size:14px;margin: 15px 0;border: 1px solid #ddd;}
+    .item-description strong{display: block;}
+    .item-options{}
+    .item-options-detail{display: flex;align-items: center;}
+    .item-options-detail strong{font-size: 14px;font-weight: 400;color:#666;width: 100px;}
+    .item-options-detail .list-search{flex: 1;}
+    .item-options-detail .list-search .select {width: 100%;max-width: 100%;}
+    .item-options-detail .list-search .select select{font-size: 14px;}
+
+    .item-info-list li .item-price {font-size:1.25rem;font-weight: 600;}
+    .item-info-list li .item-price del {vertical-align: baseline;font-size: 14px;color:#999;}
+
+    .thumb .slider-nav .slick-slide{width: 80px !important;overflow: hidden;}
+    .thumb .slider-nav .slider-nav-item{padding:0 5px;}
+    .thumb .slider-nav .slider-nav-item img{width: 100%;height: 70px;object-fit: cover;border: 1px solid #eee;}
+</style>
+{% endblock %}
+
+
+{% block script %}
+<script>
+  $('.slider-for').slick({
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: false,
+    adaptiveHeight: true,
+    asNavFor: '.slider-nav'
+  });
+  $('.slider-nav').slick({
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    asNavFor: '.slider-for',
+    dots: true,
+    centerMode: true,
+    focusOnSelect: true
+  });
+</script>
+{% endblock %}

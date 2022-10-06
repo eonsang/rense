@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <title>{{ defaultInfo.title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- App favicon -->
+    <link rel="icon" sizes="16x16" href="{{ defaultInfo.favicon }}">
+    <!-- third party css -->
+    <link href="/static/admin/css/vendor/jquery-jvectormap-1.2.2.css" rel="stylesheet" type="text/css" />
+    <link href="/static/admin/css/vendor/dataTables.bootstrap4.css" rel="stylesheet" type="text/css" />
+    <link href="/static/admin/css/vendor/responsive.bootstrap4.css" rel="stylesheet" type="text/css" />
+    {% block css %}
+    {% endblock %}
+    <!-- third party css end -->
+
+    <!-- App css -->
+    <link href="/static/admin/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="/static/admin/css/app.min.css" rel="stylesheet" type="text/css" id="light-style" />
+    <link href="/static/admin/css/app-dark.min.css" rel="stylesheet" type="text/css" id="dark-style" />
+
+</head>
+<body class="loading" data-layout-config='{"leftSideBarTheme":"dark","layoutBoxed":false, "leftSidebarCondensed":false, "leftSidebarScrollable":false,"darkMode":false, "showRightSidebarOnStart": false}'>
+<div class="wrapper">
+    {% include './lnb.njk' %}
+    <div class="content-page">
+        <div class="content">
+            {% include './header.njk' %}
+            {% block content %}
+            {% endblock %}
+        </div>
+        {% include './footer.njk' %}
+    </div>
+</div>
+
+{% if message and message != '' %}
+<div aria-live="polite" aria-atomic="true" style="position: fixed; min-height: 200px; right: 24px;bottom: 24px;" id="toast">
+    <div style="position: absolute; bottom: 0; right: 0; width: 300px;">
+        <div class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true" data-toggle="toast">
+            <div class="toast-header">
+                <strong class="mr-auto">관리자</strong>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true" class="text-secondary">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                <span class="text-secondary">{{ message }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+<script src="/static/admin/js/vendor.min.js"></script>
+<script src="/static/admin/js/app.min.js"></script>
+<!-- third party js -->
+<script src="/static/admin/js/vendor/jquery.dataTables.min.js"></script>
+<script src="/static/admin/js/vendor/dataTables.bootstrap4.js"></script>
+<script src="/static/admin/js/vendor/dataTables.responsive.min.js"></script>
+<script src="/static/admin/js/vendor/responsive.bootstrap4.min.js"></script>
+<script src="/static/admin/js/vendor/dataTables.checkboxes.min.js"></script>
+<script src="/static/admin/js/vendor/moment.js"></script>
+<script src="/static/common/common.js"></script>
+{% block script %}
+{% endblock %}
+<script>
+$(function(){
+    if ($('#toast').length) {
+      $('#toast').delay(5000).animate({
+        right: '-24px',
+        opacity: 0
+      }, 500)
+    }
+})
+</script>
+</body>
+</html>

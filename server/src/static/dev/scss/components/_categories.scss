@@ -1,0 +1,30 @@
+.categories {
+  @apply border border-gray-200;
+  overflow: auto;
+  .wrap {
+    height: 50px;
+    @apply flex items-center ;
+
+    a {
+      font-size: 1.125rem;
+      color:#bfbdbd;
+      margin:0 1em;
+      white-space: nowrap;
+
+      &.active {
+        color:#222;
+        font-weight: 500;
+      }
+    }
+  }
+
+  &.depth2 {
+    border-top: none;
+    .wrap {
+      height: 40px;
+    }
+    a {
+      font-size: 1rem;
+    }
+  }
+}

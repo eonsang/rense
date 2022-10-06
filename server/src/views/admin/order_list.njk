@@ -1,0 +1,203 @@
+{% extends './layout/base.njk' %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box">
+                    <h4 class="page-title">주문 내역 관리</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-primary">
+                    <strong>상태 알림</strong>의 변경값에 따라 예약 회원에게 알림톡이 발송됩니다.<br/>
+                </div>
+
+              <div class="card">
+                <div class="card-body">
+                    <form action="" style="width: 100%;display: block;">
+                        <table class="table-border" style="width: 100%;">
+                            <colgroup>
+                                <col width="120"> 
+                                <col />
+                                <col width="120"> 
+                                <col />
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th class="">상태알림 검색</th>
+                                    <td>
+                                        <select name="is_state" class="form-control" >
+                                            <option value="">전체</option>
+                                            <option value="exhausted" {% if query.is_state == 'exhausted' %} selected {% endif %}>재고 없음</option>
+                                            <option value="ready" {% if query.is_state == 'ready' %} selected {% endif %}>준비 완료</option>
+                                            <option value="paid" {% if query.is_state == 'paid' %} selected {% endif %}>판매 완료</option>
+                                        </select>
+                                    </td>
+                                    <th class="pl-2">담당자 검색</th>
+                                    <td>
+                                        <select name="manager" class="form-control" >
+                                            <option value="">전체</option>
+                                            {% for user in managers %}
+                                                <option value="{{ user.id }}" {% if user.id == query.manager %} selected {% endif %}>{{ user.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>검색 키워드</th>
+                                    <td colspan="3">
+                                        <input type="text" class="form-control" name="keyword" value="{{ query.keyword }}" placeholder="주문자명 / 주문자 연락처 검색" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <hr />
+                        <button type="submit" class="btn btn-primary mt-1">검색</button>
+                    </form>
+                </div>
+              </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <table id="basic-datatable" class="table dt-responsive nowrap w-100">
+                            <colgroup>
+                                <col width="70">
+                                <col width="70">
+                                <col width="70">
+                                <col width="70">
+                                <col width="">
+                                <col width="120">
+                                <col width="150">
+                                <col width="150">
+                                <col width="150">
+                                <col width="80">
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th>주문번호</th>
+                                <th style="width: 100px;">상태 알림</th>
+                                <th>발송 처리</th>
+                                <th>결제 완료</th>
+                                <th>취소 신청</th>
+                                <th>상품</th>
+                                <th>주문자 명</th>
+                                <th>주문자 연락처</th>
+                                <th>주문일시</th>
+                                <th>출고 담당자</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for object in objects %}
+                                <tr>
+                                    <td>{{ object.id }}</td>
+                                    <td>
+                                        <select name="" class="form-control" id="" style="padding:0 10px;height: 30px;"
+                                                onchange="changeOrderState(this.value, '{{ object.id }}')"
+                                        >
+                                            <option value="">-</option>
+                                            <option value="exhausted" {% if object.is_state == 'exhausted' %} selected {% endif %}>재고 없음</option>
+                                            <option value="ready" {% if object.is_state == 'ready' %} selected {% endif %}>준비 완료</option>
+                                            <option value="paid" {% if object.is_state == 'paid' %} selected {% endif %}>판매 완료</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="ordertrue{{ object.id }}"
+                                                   {% if object.is_send %} checked="checked" {% endif %}
+                                                   onclick="changeOrderSendState({% if object.is_send %}true{% else %}false{% endif %}, '{{ object.id }}');"/>
+                                            <label for="ordertrue{{ object.id }}" class="custom-control-label"></label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="orderpaid{{ object.id }}"
+                                                    {% if object.is_paid %} checked="checked" {% endif %}
+                                                   onclick="changeOrderPaidState({% if object.is_paid %}true{% else %}false{% endif %}, '{{ object.id }}');"/>
+                                            <label for="orderpaid{{ object.id }}" class="custom-control-label"></label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="ordercancel{{ object.id }}"
+                                                    {% if object.is_cancel %} checked="checked" {% endif %} disabled />
+                                            <label for="ordercancel{{ object.id }}" class="custom-control-label"></label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a href="/adm/order/detail/{{ object.id }}" class="text-body font-weight-semibold">
+                                            {{ object.Carts[0].Product.name }} 등
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {{ object.name }}
+                                    </td>
+                                    <td>
+                                        {{ object.number }}
+                                    </td>
+                                    <td>
+                                        {{ object.createdAt | date("YYYY-MM-DD HH:mm:ss")   }}
+                                    </td>
+                                    <td>
+                                        <select name="" class="form-control" id="" style="padding:0 10px;height: 30px;"
+                                            onchange="changeOrderManager('{{ object.id }}', this.value)"
+                                        >
+                                            <option value="">담당자 지정</option>
+                                            {% for user in managers %}
+                                                <option value="{{ user.id }}" {% if user.id == object.manager %} selected {% endif %}>{{ user.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <a href="/adm/order/detail/{{ object.id }}" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+      function removeFaq(id) {
+        if(confirm('삭제 하시겠습니까?')) {
+          $.ajax({
+            url: '/adm/qna/remove/' + id,
+            type: 'post',
+          }).done(function(res) {
+            if(res.success) {
+              alert('삭제 되었습니다.')
+              location.href = '/adm/qna'
+            }
+          })
+        }
+      };
+
+      $(document).ready(function(){
+        $("#basic-datatable").DataTable({
+          pageLength:10,
+          order: [[ 6, "desc" ]],
+          columns:[
+            { orderable: 1 },
+            { orderable: 1 },
+            { orderable: 1 },
+            { orderable: 1 },
+            { orderable: 1 },
+            { orderable: 1 },
+            { orderable: 1 },
+            { orderable: 1 },
+            { orderable: !1 },
+          ]
+        });
+      });
+    </script>
+{% endblock %}

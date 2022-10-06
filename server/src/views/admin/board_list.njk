@@ -1,0 +1,183 @@
+{% extends './layout/base.njk' %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box">
+                    <h4 class="page-title">공지사항 관리</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-sm-12">
+                                <a href="/adm/board/{{ boardName }}/create" class="btn btn-primary mb-2"><i class="mdi mdi-plus-circle mr-2"></i>공지사항 등록하기</a>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-centered table-striped dt-responsive nowrap w-100" id="board-datatable">
+                                <colgroup>
+                                    <col width="50">
+                                    <col width="60">
+                                    <col>
+                                    <col width="200">
+                                    <col width="100">
+                                </colgroup>
+                                <thead>
+                                <tr>
+                                    <th style="width: 20px;">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="customCheck1" d>
+                                            <label class="custom-control-label" for="customCheck1">&nbsp;</label>
+                                        </div>
+                                    </th>
+                                    <th>id</th>
+                                    <th>제목</th>
+                                    <th>등록일자</th>
+                                    <th style="width: 75px;">Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for object in objects %}
+                                    <tr>
+
+                                        <td>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="customCheck13">
+                                                <label class="custom-control-label" for="customCheck13">&nbsp;</label>
+                                            </div>
+                                        </td>
+                                        <td>{{ object.id }}</td>
+                                        <td>
+                                            <a href="/adm/board/{{ boardName }}/detail/{{ object.id }}">
+                                                {{ object.subject }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {{ object.createdAt | date("YYYY-MM-DD")   }}
+                                        </td>
+                                        <td>
+                                            <a href="/adm/board/{{ boardName }}/detail/{{ object.id }}" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
+                                            <a href="javascript:removeProductAjax({{ object.id }})" class="action-icon"> <i class="mdi mdi-delete"></i></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <button class="btn btn-danger mb-2" onclick="return removeProduct()">선택 삭제</button>
+                            </div>
+                        </div>
+                    </div> <!-- end card-body-->
+                </div> <!-- end card-->
+            </div> <!-- end col -->
+        </div>
+        <!-- end row -->
+    </div> <!-- container -->
+{% endblock %}
+
+{% block script %}
+    <script>
+      function removeProductAjax(checkedProduct) {
+        if(checkedProduct.length > 0 || typeof(checkedProduct) === 'number') {
+          if(confirm('정말 삭제하시겠습니까?')) {
+            $.ajaxSettings.traditional = true;
+            $.ajax({
+              url: '/adm/board/{{ boardName }}/delete',
+              type: 'post',
+              data: {
+                checkedProduct: checkedProduct
+              },
+            }).done(function(data){
+              if(data.success === true) {
+                location.reload();
+              } else {
+                alert('상품 삭제 실패');
+              }
+            }).fail(function(error) {
+              console.error(error);
+            }).always(function(res){
+            });
+          }
+        } else {
+          alert('선택된 게시물이 없습니다.')
+        }
+      }
+      function removeProduct() {
+        var checkedProduct = [];
+        $('.check_product').each(function(){
+          if($(this).is(':checked')) {
+            checkedProduct.push($(this).val());
+          }
+        })
+        removeProductAjax(checkedProduct);
+      }
+      $(document).ready(function(){
+        $('.is_use').on('change', function(e){
+          var isChecked = e.target.checked;
+          var id = $(this).data('id');
+          $.ajax({
+            type: 'post',
+            url: '/adm/product/detail/'+id+'/use',
+            data: {
+              use: isChecked
+            }
+          })
+        })
+        $('.is_sold_out').on('change', function(e){
+          var isChecked = e.target.checked;
+          var id = $(this).data('id');
+          $.ajax({
+            type: 'post',
+            url: '/adm/product/detail/'+id+'/soldout',
+            data: {
+              sold_out: isChecked
+            }
+          })
+        })
+        $("#board-datatable").DataTable({
+          language:{
+            paginate:{
+              previous:"<i class='mdi mdi-chevron-left'>",
+              next:"<i class='mdi mdi-chevron-right'>"
+            },
+            info:"전체 회원수 _START_ to _END_ of _TOTAL_",
+            lengthMenu:'Display <select class=\'custom-select custom-select-sm ml-1 mr-1\'><option value="10">10</option><option value="20">20</option><option value="-1">All</option></select> customers'
+          },
+          pageLength:10,
+          columns:[
+            {
+              orderable:!1,
+              render:function(e,o,l,t){
+                return"display"===o && (e='' +
+                  '<div class="custom-control custom-checkbox">' +
+                  '<input type="checkbox" class="custom-control-input dt-checkboxes check_product" value="'+l[1]+'">' +
+                  '<label class="custom-control-label">&nbsp;</label>' +
+                  '</div>'),e
+              },
+              checkboxes:{
+                selectRow:!0,
+                selectAllRender:'<div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input dt-checkboxes"><label class="custom-control-label">&nbsp;</label></div>'
+              }
+            },
+            {orderable:!0},
+            {orderable:!1},
+            {orderable:!0},
+            {orderable:!1}
+          ],
+          select: {style:"multi"},
+          order:  [[1,"desc"]],
+          drawCallback: function(){
+            $(".dataTables_paginate > .pagination").addClass("pagination-rounded")}
+        });
+      });
+    </script>
+{% endblock %}

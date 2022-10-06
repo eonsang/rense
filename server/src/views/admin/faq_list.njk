@@ -1,0 +1,124 @@
+{% extends './layout/base.njk' %}
+
+{% block content %}
+
+    <!-- Start Content-->
+    <div class="container-fluid">
+
+        <!-- start page title -->
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box">
+                    <h4 class="page-title">1:1 문의 관리</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <table id="basic-datatable" class="table dt-responsive nowrap w-100">
+                            <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>제목</th>
+                                <th>작성자</th>
+                                <th>작성일</th>
+                                <th>답변 수신 여부</th>
+                                <th>답변 여부</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for object in objects %}
+                                <tr>
+                                    <td>{{ object.id }}</td>
+                                    <td>
+                                        <a href="/adm/qna/detail/{{ object.id }}" class="text-body font-weight-semibold">
+                                            {{ object.title }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="/adm/user/{{ object.User.id }}">
+                                            {{ object.User.name }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {{ object.createdAt | date("YYYY-MM-DD HH:mm:ss")   }}
+                                    </td>
+                                    <td>
+                                        <!-- 이메일 -->
+                                        <div class="d-flex">
+                                            <div class="custom-control custom-checkbox mr-2">
+                                                <input type="checkbox" class="custom-control-input" id="customCheck1" {% if object.receive_email %} checked {% endif %} disabled>
+                                                <label class="custom-control-label" for="customCheck1">이메일</label>
+                                            </div>
+
+                                            <div class="custom-control custom-checkbox mr-2">
+                                                <input type="checkbox" class="custom-control-input" id="customCheck1" {% if object.receive_sms %} checked {% endif %} disabled>
+                                                <label class="custom-control-label" for="customCheck1">SMS</label>
+                                            </div>
+
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="customCheck1" {% if object.receive_talk %} checked {% endif %} disabled>
+                                                <label class="custom-control-label" for="customCheck1">카카오</label>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <h5 class="m-0">
+                                            {% if object.reply_content %}
+                                                <span class="badge badge-outline-success">답변 완료</span>
+                                            {% else %}
+                                                <span class="badge badge-outline-danger">미답변</span>
+                                            {% endif %}
+                                        </h5>
+                                    </td>
+                                    <td>
+                                        <a href="/adm/qna/detail/{{ object.id }}" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
+                                        <a href="javascript:removeFaq({{ object.id }})" id="delete" class="action-icon"> <i class="mdi mdi-delete"></i></a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+  function removeFaq(id) {
+    if(confirm('삭제 하시겠습니까?')) {
+      $.ajax({
+        url: '/adm/qna/remove/' + id,
+        type: 'post',
+      }).done(function(res) {
+        if(res.success) {
+          alert('삭제 되었습니다.')
+          location.href = '/adm/qna'
+        }
+      })
+    }
+  };
+
+  $(document).ready(function(){
+    $("#basic-datatable").DataTable({
+      pageLength:10,
+      columns:[
+        { orderable: 1 },
+        { orderable: 1 },
+        { orderable: 1 },
+        { orderable: 1 },
+        { orderable: !1 },
+        { orderable: 1 },
+        { orderable: !1 },
+      ]
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends './layout/base.njk' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <h4 class="page-title">팝업 관리</h4>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="{% if object.PopupImages[0] %} col-8 {% else %} col-12 {% endif %}">
+            <div class="card">
+                <form action="" method="POST" enctype="multipart/form-data" id="form">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="title">제목</label>
+                                    <input type="text" class="form-control" id="title" placeholder="제목" name="title" value="{{ object.title }}" required>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="form-group">
+                                    <label for="">&nbsp;</label>
+                                    <div class="custom-checkbox mt-1">
+                                        <input type="checkbox" id="is_active" name="is_active" {% if object.is_active %} checked {% endif %} data-switch="primary"/>
+                                        <label for="is_active" data-on-label="On" data-off-label="Off"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label id="link">링크</label>
+                                    <input type="url" class="form-control" id="link" name="link" value="{{ object.link }}">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="target_blank" name="target_blank"  {% if object.target_blank %} checked {% endif %} >
+                                        <label class="custom-control-label" for="target_blank">새창으로 열기</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label id="start_date">시작 날짜</label>
+                                    <input type="datetime-local" class="form-control " id="start_date" name="start_date" value="{{ (object.start_date | date).slice(0, 16) }}" required>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label id="end_date">종료 날짜</label>
+                                    <input type="datetime-local" class="form-control " id="end_date" name="end_date" value="{{ (object.end_date | date).slice(0, 16) }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label>가로 사이즈</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" placeholder="가로 최대 사이즈" name="width" value="{{ object.width }}">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">px</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label>X 위치</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" placeholder="X 위치" name="position_x" value="{{ object.position_x or 0 }}">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">px</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label>Y 위치</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" placeholder="Y 위치" name="position_y" value="{{ object.position_y or 0 }}">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">px</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label>팝업 이미지</label>
+                                    <input type="hidden" name="imageId" value="{{ object.PopupImages[0].id }}">
+                                    <div class="input-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="file" name="file">
+                                            <label class="custom-file-label" for="file">{{ object.PopupImages[0].original_name }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3 d-flex">
+                            <a href="{{ routes.adminPopup }}" class="btn btn-secondary">뒤로가기</a>
+                            <button type="button" id="delete" class="btn btn-danger ml-auto mr-1">삭제</button>
+                            <button type="submit" class="btn btn-primary">저장</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% if object.PopupImages[0] %}
+        <div class="col-4">
+            <div class="card">
+                <div class="card-body">
+                    <label for="title">이미지 미리보기</label>
+                    <div class="border">
+                        <img src="{{ object.PopupImages[0].path }}" style="max-width: 100%;" alt="{{ object.title }}">
+                    </div>
+                </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+$(function(){
+  $('#delete').on('click', function(){
+    if(confirm('삭제 하시겠습니까?')) {
+      $.ajax({
+        url: '/adm/popup/remove/{{ object.id }}',
+        type: 'post',
+      }).done(function(res) {
+        if(res.success) {
+          alert('삭제 되었습니다.')
+          location.href = '{{ routes.adminPopup }}'
+        }
+      })
+    }
+  })
+})
+</script>
+{% endblock %}

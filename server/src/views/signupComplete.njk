@@ -1,0 +1,23 @@
+{% extends 'layout/base.njk' %}
+
+{% block content %}
+<div class="accounts">
+    <div class="wrap">
+        <div class="accounts__logo">
+            <img src="/static/images/logo-new.jpg" alt="한빛 안경 랜드">
+        </div>
+        <div class="form text-center">
+            <div class="complete-message">
+                <h1>한빛안경랜드의 회원으로<br/>가입해주셔서 감사합니다.</h1>
+                <div>
+                    <p>{{ username }}님 감사합니다!</p>
+                </div>
+            </div>
+            <div class="form-btnbox">
+                <a href="/accounts/login" class="submit text-center">로그인하기</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,307 @@
+{% extends './layout/base.njk' %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box">
+                    <h4 class="page-title">홈페이지 설정</h4>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        <form action="" method="POST" enctype="multipart/form-data" id="form">
+                        <h4 class="mt-2">기본 정보</h4>
+                        <p class="text-muted mb-4">홈페이지 기본 정보를 설정해주세요.</p>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="title">사이트명</label>
+                                    <input class="form-control" type="text" placeholder="사이트명" id="title" name="title" value="{{ setting.title }}"/>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="og_title">사이트명 <small>(og_title)</small></label>
+                                    <input class="form-control" type="text" placeholder="사이트명" id="og_title" name="og_title" value="{{ setting.og_title }}"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="keyword">키워드</label>
+                                    <input class="form-control" type="text" placeholder="키워드" id="keyword" name="keyword" value="{{ setting.keyword }}" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="og_description">소개글 <small>(og_description)</small></label>
+                                    <input class="form-control" type="text" placeholder="소개글" id="og_description" name="og_description" value="{{ setting.og_description }}" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="og_url">사이트 주소 <small>(og_url)</small></label>
+                                    <input class="form-control" type="url" placeholder="사이트 주소" id="og_url" name="og_url" value="{{ setting.og_url }}"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="og_image">이미지 <small>(og_image)</small></label>
+                                    <div class="input-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="og_image" name="og_image" accept="image/*">
+                                            <label class="custom-file-label" for="inputGroupFile04">{{ setting.og_image }}</label>
+                                        </div>
+                                    </div>
+                                    <small><span class="text-danger">*</span> 200 x 300 사이즈의 이미지를 입력해주세요.</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="favicon">
+                                        파비콘
+                                        <span tabindex="0" class="" data-toggle="popover" data-trigger="hover" title="" data-content="And here's some amazing content. It's very engaging. Right?" data-original-title="Ohh Wow !">
+                                            <i class=" uil-question-circle"></i>
+                                        </span>
+                                    </label>
+                                    <div class="input-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="favicon" name="favicon" accept="image/*">
+                                            <label class="custom-file-label" for="inputGroupFile04">{{ setting.favicon }}</label>
+                                        </div>
+                                    </div>
+                                    <small><span class="text-danger">*</span> 16 x 16 사이즈의 이미지를 입력해주세요. <a href="https://www.favicon-generator.org/" target="_blank">[제작링크]</a></small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="add_meta">추가 &lt;meta&gt; 태그</label>
+                                    <textarea class="form-control" id="add_meta" rows="5" name="add_meta">{{ setting.add_meta }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="add_script">추가 &lt;script&gt; 태그</label>
+                                    <textarea class="form-control" id="add_script" rows="5" name="add_script">{{ setting.add_script }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="text-right">
+                                    <button type="submit" class="btn btn-success">
+                                        저장
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="my-4">
+                            <hr>
+                        </div>
+                        <h4 class="mt-2">회사 정보</h4>
+                        <p class="text-muted mb-4">회사 정보를 입력해주세요.</p>
+
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="company_name">회사명</label>
+                                        <input class="form-control" type="text" placeholder="회사명" id="company_name" name="company_name" value="{{ setting.company_name }}"/>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="company_register_number">사업자 등록번호</label>
+                                        <input class="form-control" type="text" placeholder="사업자 등록번호" id="company_register_number" name="company_register_number" value="{{ setting.company_register_number }}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="company_owner">대표자명</label>
+                                        <input class="form-control" type="text" placeholder="대표자명" id="company_owner" name="company_owner" value="{{ setting.company_owner }}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="company_tel">전화번호</label>
+                                        <input class="form-control" type="text" placeholder="전화번호" id="company_tel" name="company_tel" value="{{ setting.company_tel }}"/>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="company_fax">팩스번호</label>
+                                        <input class="form-control" type="text" placeholder="팩스번호" id="company_fax" name="company_fax" value="{{ setting.company_fax }}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="company_address_code">회사 우편번호</label>
+                                        <input class="form-control" type="text" placeholder="회사 우편번호" id="company_address_code" name="company_address_code" value="{{ setting.company_address_code }}"/>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="company_address">회사 주소</label>
+                                        <input class="form-control" type="text" placeholder="회사 주소" id="company_address" name="company_address" value="{{ setting.company_address }}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="company_information_manager">정보관리책임자명</label>
+                                        <input class="form-control" type="text" placeholder="정보관리책임자명" id="company_information_manager" name="company_information_manager" value="{{ setting.company_information_manager }}"/>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="company_information_manager_email">정보관리책임자 Email</label>
+                                        <input class="form-control" type="text" placeholder="정보관리책임자 Email" id="company_information_manager_email" name="company_information_manager_email" value="{{ setting.company_information_manager_email }}"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="text-right">
+                                    <button type="submit" class="btn btn-success">
+                                        저장
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="my-4">
+                            <hr>
+                        </div>
+                        <h4 class="mt-2">약관 정보</h4>
+                        <p class="text-muted mb-4">개인정보 처리방침 및 홈페이지 이용약관을 입력해주세요.</p>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="example-textarea">개인정보 처리방침</label>
+                                    <div id="" class="textEditor"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="example-textarea">이용약관</label>
+                                    <div id="" class="textEditor"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="text-right">
+                                    <button type="submit" class="btn btn-success">
+                                        저장
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block css %}
+<link href="/static/admin/css/vendor/summernote-bs4.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block script %}
+<script src="/static/admin/js/vendor/summernote-bs4.min.js"></script>
+<script src="/static/admin/js/vendor/summernote-ko-KR.min.js"></script>
+
+<script>
+$(function(){
+  $(".textEditor").summernote({
+    lang: 'ko-KR',
+    placeholder: "",
+    height: 300,
+    callbacks: {
+      onImageUpload: function(files) {
+        console.log(files);
+        for (var i = 0; i <= files.length - 1; i++) {
+          singleUpload(files[i], this);
+        }
+      }
+    }
+  });
+  $('.textEditor').eq(0).summernote('code', `{{ setting.privacy | safe }}`)
+  $('.textEditor').eq(1).summernote('code', `{{ setting.stipulation | safe }}`);
+
+  $('#form').submit(function(e){
+    e.preventDefault();
+
+    var privacy = $('.textEditor').eq(0).summernote('code');
+    var stipulation = $('.textEditor').eq(1).summernote('code');
+
+    var formData = new FormData();
+    formData.append('title', title.value);
+    formData.append('og_title', og_title.value);
+    formData.append('og_description', og_description.value);
+    formData.append('og_url', og_url.value);
+    formData.append('og_image', og_image.files[0]);
+    formData.append('favicon', favicon.files[0]);
+    formData.append('add_meta', add_meta.value);
+    formData.append('add_script', add_script.value);
+    formData.append('privacy', privacy);
+    formData.append('stipulation', stipulation);
+    formData.append('company_name', company_name.value);
+    formData.append('company_owner', company_owner.value);
+    formData.append('company_register_number', company_register_number.value);
+    formData.append('company_tel', company_tel.value);
+    formData.append('company_fax', company_fax.value);
+    formData.append('company_address', company_address.value);
+    formData.append('company_address_code', company_address_code.value);
+    formData.append('company_information_manager', company_information_manager.value);
+    formData.append('company_information_manager_email', company_information_manager_email.value);
+    formData.append('keyword', keyword.value);
+      $.ajax({
+        url: '{{ routes.adminSetting }}',
+        type: 'post',
+        data: formData,
+        contentType: false,
+        processData: false,
+      }).done(function(data){
+        if(data.success === true) {
+          alert('홈페이지 기본정보가 수정 되었습니다.');
+          location.reload();
+        } else {
+          alert('홈페이지 기본정보 수정 실패');
+        }
+      }).fail(function(error) {
+        console.error(error);
+      })
+    });
+})
+</script>
+{% endblock %}

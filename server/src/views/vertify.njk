@@ -1,0 +1,13 @@
+{% extends 'layout/base.njk' %}
+
+{% block content %}
+
+    <div>
+        <form action="" method="POST">
+            <input type="hidden" name="key" value="{{ key }}">
+            <input type="hidden" name="userId" value="{{ userId }}">
+            <button type="submit">인증 완료하기</button>
+        </form>
+    </div>
+{% endblock %}
+

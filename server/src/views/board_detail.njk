@@ -1,0 +1,56 @@
+{% extends 'layout/base.njk' %}
+
+{% block content %}
+    {% include 'layout/header.njk' %}
+    <div class="container">
+        <div class="board">
+            <div class="wrap">
+                <h1 class="board__title">공지사항</h1>
+
+                <div class="board__table2">
+                    <table>
+                        <colgroup>
+                            <col width="120">
+                            <col>
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                            <th>번호</th>
+                            <td>{{ object.id }}</td>
+                        </tr>
+                        <tr>
+                            <th>제목</th>
+                            <td>
+                                {{ object.subject }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>작성자</th>
+                            <td>{{ object.User.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>내용</th>
+                            <td>{{ object.content | safe }}</td>
+                        </tr>
+                        <tr>
+                            <th>작성일</th>
+                            <td>{{ object.createdAt | date("YYYY-MM-DD") }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <hr class="my-4">
+
+                <div class="board__btnbox">
+                    <a href="/board/{{ boardName }}" class="button mr-1">목록</a>
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+    {% include 'layout/footer.njk' %}
+{% endblock %}
+

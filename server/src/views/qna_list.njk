@@ -1,0 +1,86 @@
+{% extends 'layout/base.njk' %}
+
+{% block style %}
+<style>
+    @media screen and (max-width: 460px) {
+        .board__table colgroup col:nth-child(3),
+        .board__table colgroup col:nth-child(5),
+        .board__table th:nth-child(3),
+        .board__table th:nth-child(5),
+        .board__table td:nth-child(3),
+        .board__table td:nth-child(5) {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    {% include 'layout/header.njk' %}
+    <div class="container">
+        <div class="board">
+            <div class="wrap">
+                <h1 class="board__title">1:1문의</h1>
+                {% if objects | length %}
+
+                    {{ message }}
+                <div class="board__table">
+                    <table>
+                        <colgroup>
+                            <col width="50">
+                            <col>
+                            <col width="100">
+                            <col width="80">
+                            <col width="80">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>번호</th>
+                            <th>제목</th>
+                            <th>작성자</th>
+                            <th>답변 상태</th>
+                            <th>작성일</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for object in objects %}
+                                <tr>
+                                    <td>{{ object.id }}</td>
+                                    <td>
+                                        <a href="/qna/detail/{{ object.id }}">
+                                            {{ object.title }}
+                                            {% if object.is_secret %}
+                                                <span class="text-blue-300 text-sm">비밀글</span>
+                                            {% endif %}
+                                        </a>
+                                    </td>
+                                    <td>{{ object.User.name }}</td>
+                                    <td>
+                                        {% if object.reply_content %}
+                                            <span class="">답변 완료</span>
+                                        {% else %}
+                                            <span class="">미답변</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ object.createdAt | date("MM.DD") }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                    <p class="text-center py-20 mx-auto">등록된 QnA이 없습니다.</p>
+                {% endif %}
+
+                <div class="board__btnbox">
+                    <a href="/qna/create" class="button">1:1 문의 등록</a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    {% include 'layout/footer.njk' %}
+
+{% endblock %}
+

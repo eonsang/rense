@@ -1,0 +1,91 @@
+{% extends './layout/base.njk' %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box">
+                    <h4 class="page-title">옵션 관리</h4>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-sm-12">
+                                <a href="/adm/options/create" class="btn btn-primary mb-2"><i class="mdi mdi-plus-circle mr-2"></i>옵션 등록하기</a>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-centered table-striped dt-responsive nowrap w-100" id="products-datatable">
+                                <colgroup>
+                                    <col width="50">
+                                    <col>
+                                    <col width="100">
+                                </colgroup>
+                                <thead>
+                                <tr>
+                                    <th>id</th>
+                                    <th>옵션 명</th>
+                                    <th style="width: 75px;">Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% if objects.length %}
+                                {% for option in objects %}
+                                    <tr>
+                                        <td>{{ option.id }}</td>
+                                        <td>{{ option.name }}</td>
+                                        <td>
+                                            <a href="/adm/options/detail/{{ option.id }}" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
+                                            <a href="javascript:removeOptionAjax({{ option.id }})" class="action-icon"> <i class="mdi mdi-delete"></i></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="3">
+                                        <p style="text-align: center;line-height: 80px;">등록된 옵션이 없습니다.</p>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div> <!-- end card-body-->
+                </div> <!-- end card-->
+            </div> <!-- end col -->
+        </div>
+        <!-- end row -->
+    </div> <!-- container -->
+{% endblock %}
+
+
+{% block script %}
+<script>
+  function removeOptionAjax(checkedProduct) {
+    if(checkedProduct.length > 0 || typeof(checkedProduct) === 'number') {
+      if(confirm('정말 삭제하시겠습니까?')) {
+        $.ajax({
+          url: '/adm/options/remove/' + checkedProduct,
+          type: 'post',
+        }).done(function(data){
+          if(data.success === true) {
+            location.reload();
+          } else {
+            alert('상품 삭제 실패');
+          }
+        }).fail(function(error) {
+          console.error(error);
+        }).always(function(res){
+        });
+      }
+    } else {
+      alert('선택된 게시물이 없습니다.')
+    }
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,284 @@
+{% extends 'layout/base.njk' %}
+
+{% block content %}
+    <div class="accounts">
+        <div class="wrap">
+            <div class="accounts__logo">
+                <img src="/static/images/logo-new.jpg" alt="한빛안경랜드">
+            </div>
+            {{ message }}
+            <form action="" method="POST" id="signupForm">
+               <div class="form">
+                   <div class="form-row">
+                       <div class="row">
+                           <div class="input">
+                               <input type="text" name="name" placeholder="이름" id="name" required/>
+                           </div>
+                       </div>
+                   </div>
+                   {# <div class="form-row">
+                       <div class="row">
+                           <div class="input">
+                               <input type="email" name="email" id="email" placeholder="이메일" required/>
+                           </div>
+                       </div>
+                       <p class="text-sm text-red-500" id="email-false" style="display: none;">이미 가입된 이메일 입니다.</p>
+                   </div> #}
+                   <div class="form-row">
+                       <div class="row">
+                           <div class="input">
+                               <input type="text" name="number" id="number" placeholder="연락처" maxlength="11" required/>
+                           </div>
+                       </div>
+                       <p class="text-sm text-red-500" id="number-false" style="display: none;">이미 가입된 연락처 입니다.</p>
+                       <p class="text-sm text-red-500">- 핸드폰 번호로 입력해주세요!</p>
+                   </div>
+                   <div class="form-row">
+                       <div class="row">
+                           <div class="input">
+                               <input type="password" name="password" id="password" placeholder="비밀번호" required/>
+                           </div>
+                       </div>
+                   </div>
+                   <div class="form-row">
+                       <div class="row">
+                           <div class="input">
+                               <input type="password" id="password-check" placeholder="비밀번호 확인" required/>
+                           </div>
+                       </div>
+                   </div>
+
+                   <div id="wrap" style="display:none;border:1px solid;width:100%;height:300px;position:relative">
+                       <img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" onclick="foldDaumPostcode()" alt="접기 버튼">
+                   </div>
+               </div>
+
+                <div class="row text-sm">
+                    <label for="privacy" class="checkbox">
+                        <input type="checkbox" hidden="" id="privacy" checked="">
+                        <span class="mr-1"></span>
+                        <p>개인정보 처리방침에 동의합니다.</p>
+                    </label>
+                    <a href="javascript:$('#pop1').addClass('active');" class="ml-auto text-sm">[약관 보기]</a>
+                </div>
+                <div class="row text-sm mt-4">
+                    <label for="stipulation" class="checkbox">
+                        <input type="checkbox" hidden="" id="stipulation" checked="">
+                        <span class="mr-1"></span>
+                        <p>서비스 이용약관에 동의합니다.</p>
+                    </label>
+                    <a href="javascript:$('#pop2').addClass('active');" class="ml-auto text-sm">[약관 보기]</a>
+                </div>
+
+                <div class="form-btnbox">
+                    <a href="/" class="cancel mr-1">취소</a>
+                    <button type="submit" class="submit">회원가입</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="pop" id="pop1">
+        <div class="pop-content">
+            <h2>개인정보 처리방침</h2>
+            <button onclick="$('.pop').removeClass('active');">닫기</button>
+            <div class="text">
+                {{ defaultInfo.privacy | safe }}
+            </div>
+        </div>
+    </div>
+
+    <div class="pop" id="pop2">
+        <div class="pop-content">
+            <h2>서비스 이용약관</h2>
+            <button onclick="$('.pop').removeClass('active');">닫기</button>
+            <div class="text">
+                {{ defaultInfo.stipulation | safe }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block script %}
+    <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
+    <script>
+  function checkCompanyCode() {
+    if( $('#companyCode').val().length !== 10 ) {
+      alert('10자리를 입력해주세요.');
+      return;
+    }
+    $.ajax({
+      type:'post',
+      url: '/accounts/checkCompanyCode',
+      data: {
+        code: $('#companyCode').val()
+      }
+    }).done(function(res){
+      if(res.success) {
+        $('#companyCodeInfo').text('확인되었습니다.');
+        $('#companyCodeInfo').removeClass('text-red-500').addClass('text-indigo-500');
+      } else {
+        $('#companyCodeInfo').text('가입된 계정이 있습니다.');
+      }
+    }).fail(function(error) {
+      console.error(error);
+    }).always(function(res){
+    });
+  }
+  $(function(){
+    /*
+    $('#email').focusout(function(){
+      $.ajax({
+        url: '/accounts/checkEmail',
+        type: 'post',
+        data: {
+          email: $('#email').val()
+        },
+      }).done(function(res){
+        if( res.success ) {
+          $('#email-false').hide();
+        } else {
+          $('#email-false').show();
+        }
+      }).fail(function(error) {
+        console.error(error);
+      }).always(function(res){
+      });
+    });
+    */
+    $('#number').focusout(function(){
+      $.ajax({
+        url: '/accounts/checkNumber',
+        type: 'post',
+        data: {
+          number: $('#number').val()
+        },
+      }).done(function(res){
+        if( res.success ) {
+          $('#number-false').hide();
+        } else {
+          $('#number-false').show();
+        }
+      }).fail(function(error) {
+        console.error(error);
+      }).always(function(res){
+      });
+    });
+    
+    $('#signupForm').submit(function(e){
+      e.preventDefault();
+      var privacyCheck = $('#privacy').is(':checked');
+      var stipulationCheck = $('#stipulation').is(':checked');
+      if(!privacyCheck) {
+        alert('개인정보 처리방첨에 동의해주세요.');
+        return;
+      }
+      if(!stipulationCheck) {
+        alert('서비스 이용약관에 동의해주세요.');
+        return;
+      }
+      var password = $('#password').val();
+      var passwordCheck = $('#password-check').val();
+      if(password !== passwordCheck) {
+        alert('비밀번호가 같지않습니다.');
+        $('#password').val('');
+        $('#password-check').val('');
+        return;
+      }
+      $.ajax({
+        url: '/accounts/signup',
+        type: 'post',
+        data: $(this).serialize(),
+      }).done(function(res){
+        if( res.success ) {
+          location.href='/accounts/complete';
+        } else {
+          alert(res.message);
+          location.href='/accounts/login';
+        }
+      }).fail(function(error) {
+        console.error(error);
+      }).always(function(res){
+      });
+    })
+  })
+</script>
+
+    <script>
+      // 우편번호 찾기 찾기 화면을 넣을 element
+      var element_wrap = document.getElementById('wrap');
+
+      function foldDaumPostcode() {
+        // iframe을 넣은 element를 안보이게 한다.
+        element_wrap.style.display = 'none';
+      }
+
+      function searchAddress() {
+        // 현재 scroll 위치를 저장해놓는다.
+        var currentScroll = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
+        new daum.Postcode({
+          oncomplete: function(data) {
+            // 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+            // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+            // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+            var addr = ''; // 주소 변수
+            var extraAddr = ''; // 참고항목 변수
+
+            //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+            if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+              addr = data.roadAddress;
+            } else { // 사용자가 지번 주소를 선택했을 경우(J)
+              addr = data.jibunAddress;
+            }
+
+            // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+            if(data.userSelectedType === 'R'){
+              // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+              // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+              if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                extraAddr += data.bname;
+              }
+              // 건물명이 있고, 공동주택일 경우 추가한다.
+              if(data.buildingName !== '' && data.apartment === 'Y'){
+                extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+              }
+              // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+              if(extraAddr !== ''){
+                extraAddr = ' (' + extraAddr + ')';
+              }
+              // 조합된 참고항목을 해당 필드에 넣는다.
+              document.getElementById("companyAddr3").value = extraAddr;
+
+            } else {
+              document.getElementById("companyAddr3").value = '';
+            }
+
+            // 우편번호와 주소 정보를 해당 필드에 넣는다.
+            document.getElementById('companyAddrCode').value = data.zonecode;
+            document.getElementById("companyAddr1").value = addr;
+            // 커서를 상세주소 필드로 이동한다.
+            document.getElementById("companyAddr2").focus();
+
+            // iframe을 넣은 element를 안보이게 한다.
+            // (autoClose:false 기능을 이용한다면, 아래 코드를 제거해야 화면에서 사라지지 않는다.)
+            element_wrap.style.display = 'none';
+
+            // 우편번호 찾기 화면이 보이기 이전으로 scroll 위치를 되돌린다.
+            document.body.scrollTop = currentScroll;
+          },
+          // 우편번호 찾기 화면 크기가 조정되었을때 실행할 코드를 작성하는 부분. iframe을 넣은 element의 높이값을 조정한다.
+          onresize : function(size) {
+            element_wrap.style.height = size.height+'px';
+          },
+          width : '100%',
+          height : '100%'
+        }).embed(element_wrap);
+
+        // iframe을 넣은 element를 보이게 한다.
+        element_wrap.style.display = 'block';
+      }
+    </script>
+{% endblock %}

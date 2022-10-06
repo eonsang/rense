@@ -1,0 +1,86 @@
+.imageSlider {
+  @apply fixed left-0 top-0 w-full h-full flex items-center justify-center;
+  z-index: 7000;
+  background: rgba(0,0,0,0.5);
+
+  .imageSlider__content {
+    background:#fff;
+    padding: 20px;
+    padding-top: 80px;
+    width: 100%;
+    max-width: 640px;
+    position: relative;
+    .close {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      width: 40px;
+      height: 40px;
+      display: block;
+      z-index: 2;
+      text-indent: -9999px;
+      overflow: hidden;
+      background: url('../../images/icon-x.png') no-repeat right top;
+      background-size: auto 30px;
+    }
+  }
+
+  .slider-for {
+    @apply relative;
+    img {
+      max-width: 500px;
+      width: 100%;
+    }
+  }
+  .slider-nav {
+    margin:0 auto;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 300px;
+    padding:0 50px;
+    text-align: center;
+    @apply relative;
+    .img {
+      padding:0 5px;
+      max-width: 80px;
+      img {
+        width: 100%;
+        display: inline-block;
+      }
+    }
+    .slick-arrow {
+      position: absolute;
+      z-index: 10;
+      top: 50%;
+      transform: translateY(-50%);
+      background: url('../../images/icon-arrow.png') no-repeat center;
+      text-indent: -9999px;
+      overflow: hidden;
+      width: 50px;
+      height: 50px;
+
+      &.prev-arrow {
+        left: 0;
+      }
+      &.next-arrow {
+        right: 0;
+        transform: rotate(180deg) translateY(50%);
+      }
+    }
+
+    img {
+    }
+  }
+
+  .img {
+    text-align: center;
+  }
+  img {
+    display: inline-block;
+    vertical-align: top;
+  }
+}
+
+.slick-track {
+  margin:0 !important;
+}

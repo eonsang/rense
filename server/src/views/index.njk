@@ -1,0 +1,647 @@
+{% extends 'layout/base.njk' %}
+
+
+{% block content %}
+
+    {% include 'layout/header.njk' %}
+
+    <div class="container">
+       <!-- depth 1 -->
+      <div class="list-search">
+        <div class="select">
+          <select name="sort" id="" onChange="window.location.href='/?{% if depth1 %}depth1={{ depth1 }}&{% endif %}{% if depth2 %}depth2={{ depth2 }}&{% endif %}{% if keyword %}keyword={{ keyword }}&{% endif %}sort=' + this.value">
+            <option value="order" {% if (sort == 'order') or (sort == '') %} selected {% endif %}>관리자 지정 순</option>
+            <option value="createdAt" {% if (sort == 'createdAt') %} selected {% endif %}>등록 순</option>
+            <option value="name" {% if (sort == 'name') %} selected {% endif %}>상품명 순</option>
+            <option value="sold_count"{% if (sort == 'sold_count') %} selected {% endif %}>판매수량 순</option>
+          </select>
+        </div>
+        <form action="." method="GET">
+          <div class="formblock">
+            <input type="text" name="keyword" placeholder="상품명 검색" value="{{ keyword }}">
+            <button type="submit">검색</button>
+          </div>
+        </form>
+      </div>
+        <div class="categories">
+          <div class="wrap">
+            <a href="/" {% if not depth1 %} class="active" {% endif %}>전체 상품</a>
+            {% for category in categories %}
+              <a href="/?depth1={{ category.id }}" {% if depth1 == category.id %} class="active" {% endif %}>{{ category.name }}</a>
+            {% endfor %}
+          </div>
+        </div>
+      {% if categoriesDepth %}
+        <div class="categories depth2">
+          <div class="wrap">
+            <a href="/?depth1={{ depth1 }}" {% if not depth2 %} class="active" {% endif %}>전체 상품</a>
+            {% for category in categoriesDepth %}
+              <a href="/?depth1={{ depth1 }}&depth2={{ category.id }}" {% if depth2 == category.id %} class="active" {% endif %}>{{ category.name }}</a>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      <style>
+        .item__tags{position: absolute;left: 0;top: 0;}
+        .item__tags span{display: block;padding:0 10px;font-size: 14px;line-height: 30px;color:#fff;text-align: center;white-space: nowrap;}
+        .item__tags span.new_item{background:#ea4026;}
+        .item__tags span.new_color{background:#09aeee}
+        .item__tags span.best{background:#3333FF;}
+      </style>
+        <div class="products">
+            <div class="wrap">
+                {% if products | length %}
+                    {% for product in products %}
+                      {% if depth2 %}
+                        {% if depth2 == product.Categories[1].id %}
+                          <div class="item">
+                            <a href="/item/{{ product.id }}" class="item__cart">
+                              <div class="item__thumb">
+                                <div class="item__tags">
+                                  {% if product.is_new_item %}
+                                    <span class="new_item">NEW ITEM</span>
+                                  {% endif %}
+                                  {% if product.is_new_color %}
+                                    <span class="new_color">NEW COLOR</span>
+                                  {% endif %}
+                                  {% if product.is_best %}
+                                    <span class="best">BEST</span>
+                                  {% endif %}
+                                </div>
+                                <!-- 350 x 400 -->
+                                <img src="/{{ product.ProductImages[0].path }}" alt="{{ product.name }}">
+                                <div class="item__actions">
+                                  {# <a href="javascript:showDetailImage({{ product.id }});" class="item__detail">자세히보기</a> #}
+
+                                  {% if not product.sold_out %}
+  {#                                  <a href="javascript:showDetailOption({{ product.id }});" class="item__cart">장바구니</a>#}
+
+                                  {% endif %}
+                                </div>
+                              </div>
+                              <div class="item__info">
+                              <h3 class="item__name">{{ product.name }}</h3>
+                              <p class="item__subname" style="white-space: pre-line">{{ product.description | safe }}</p>
+{#                              <p class="item__subname mt-1">착용연예인 : {{ product.entertainer }}</p>#}
+{#                              <p class="item__subname mt-1">총 판매수량 : {{ product.sold_count }}</p>#}
+                              {% if not product.sold_out %}
+                                <div class="item__price">
+                                  <span>{{ product.price|comma }}</span>
+                                  <h3>{{ product.customer_price|comma }}</h3>
+                                </div>
+                                <div class="item__label">
+                                  {% if product.createdAt | date("YYYY-MM-DD") > today | date("YYYY-MM-DD") %}
+                                    <span class="new">NEW</span>
+                                  {% endif %}
+                                </div>
+                              {% else %}
+                                <div class="item__price">
+                                  <h3>품절</h3>
+                                </div>
+                              {% endif %}
+                            </div>
+                            </a>
+                          </div>
+                          {% endif %}
+                      {% else %}
+                        <div class="item">
+                          <a href="/item/{{ product.id }}" class="item__cart">
+                            <div class="item__thumb">
+                              <div class="item__tags">
+                                {% if product.is_new_item %}
+                                  <span class="new_item">NEW ITEM</span>
+                                {% endif %}
+                                {% if product.is_new_color %}
+                                  <span class="new_color">NEW COLOR</span>
+                                {% endif %}
+                                {% if product.is_best %}
+                                  <span class="best">BEST</span>
+                                {% endif %}
+                              </div>
+                              <!-- 350 x 400 -->
+                              <img src="/{{ product.ProductImages[0].path }}" alt="{{ product.name }}">
+                              <div class="item__actions">
+  {#                              <a href="javascript:showDetailImage({{ product.id }});" class="item__detail">자세히보기</a>#}
+
+                                {% if not product.sold_out %}
+  {#                                <a href="javascript:showDetailOption({{ product.id }});" class="item__cart">장바구니</a>#}
+
+                                {% endif %}
+                              </div>
+                            </div>
+                            <div class="item__info">
+                              <h3 class="item__name">{{ product.name }}</h3>
+                              <p class="item__subname" style="white-space: pre-line">{{ product.description | safe }}</p>
+  {#                            <p class="item__subname mt-1">착용연예인 : {{ product.entertainer }}</p>#}
+  {#                            <p class="item__subname mt-1">총 판매수량 : {{ product.sold_count }}</p>#}
+                              {% if not product.sold_out %}
+                                <div class="item__price">
+                                  <span>{{ product.price|comma }}</span>
+                                  <h3>{{ product.customer_price|comma }}</h3>
+                                </div>
+                                <div class="item__label">
+                                  {% if product.createdAt | date("YYYY-MM-DD") > today | date("YYYY-MM-DD") %}
+                                    <span class="new">NEW</span>
+                                  {% endif %}
+                                </div>
+                              {% else %}
+                                <div class="item__price">
+                                  <h3>품절</h3>
+                                </div>
+                              {% endif %}
+                            </div>
+                          </a>
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p class="text-center py-20 mx-auto">등록된 제품이 없습니다.</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="more" style="display: none;">
+            <a href="#//" class="more-btn">더보기</a>
+        </div>
+    </div>
+    {% include 'layout/footer.njk' %}
+    {% include './components/mainPopup.njk' %}
+    {% include './components/imageSlider.njk' %}
+    {% include './components/detailOptions.njk' %}
+
+
+{% endblock %}
+
+{% block script %}
+<script>
+
+  function showImageLayer(path) {
+    window.open('/showImage?path=' + path, '_blank')
+  }
+
+
+  function showDetailOption(id) {
+    // 회원 장바구니 가져와서 넣어주기
+    $.ajax({
+      url: '/cart/all',
+      type: 'get'
+    }).done(function(res){
+      if(res.success) {
+        var html = '';
+        var totalPrice = 0;
+        var totalCount = 0;
+        res.data.map(function(item) {
+          var optionText = '';
+          if(item.lens_option) {
+
+            var option = JSON.parse(item.lens_option);
+            optionText = option.sph + ' / ' +  option.cyl + ' / ' + option.add + ' / ' + option.axis + ' / ' + option.bc + ' / ' + option.dia;
+          } else {
+            $('#addCartbutton').remove();
+            optionText = item.ProductOptionDetail.name;
+          }
+          totalPrice += (parseInt(item.Product.customer_price, 10) + parseInt(item.ProductOptionDetail.price, 10)) * item.quantity;
+          totalCount += parseInt(item.quantity, 10);
+
+          html += ' <div class="reglist__item" id="prd'+item.ProductOptionDetail.id+'">\n' +
+            '                        <div class="info">\n' +
+            '                            <h3>'+item.Product.name+'</h3>\n' +
+            '                            <p>'+optionText+'</p>\n' +
+            '                        </div>\n' +
+            '                        <div class="form" data-price="'+item.ProductOptionDetail.price+'" data-parents-price="'+item.Product.customer_price+'">\n' +
+            '                            <button class="dec" data-cart-id="'+item.id+'">-</button>\n' +
+            '                            <input type="text" value="'+item.quantity+'" class="cnt" readonly>\n' +
+            '                            <button class="inc" data-cart-id="'+item.id+'">+</button>\n' +
+            '                        </div>\n' +
+            '                        <button class="delete" data-cart-id="'+item.id+'">삭제</button>' +
+            '                    </div>';
+        })
+
+        $('#totalCount').val(totalCount);
+        $('#optionCount').text(numberWithCommas(totalCount));
+
+        $('#totalPrice').val(totalPrice);
+        $('#optionTotalPrice').text(numberWithCommas(totalPrice));
+
+        $('#reglist').html('').append(html);
+      }
+    }).fail(function(error) {
+      alert('관리자에게 문의주세요.')
+    }).always(function(res){
+    });
+
+    $.ajax({
+      url: '/product/' + id,
+      type: 'get',
+    }).done(function(res){
+      if( res.success ) {
+        var html = '';
+        if(!res.product.is_lens) {
+          // 안경
+          res.product.ProductOptions.map(function(option){
+            option.ProductOptionDetails.map(function(optionDetail){
+              html += ' <div class="optionlist__item">\n' +
+                      '                        <div class="optionlist__header">\n' +
+                      '                            <h3>'+optionDetail.name+'</h3>\n' +
+
+                      '                        </div>\n' +
+                      '                        <div class="optionlist__thumb" data-path="'+optionDetail.path+'">\n' +
+                      '                            <button class="addOption" ' + (optionDetail.sold_out ? 'disabled="disabled"' : '') +
+                      'data-parents-id="'+res.product.id+'" ' + // 부모 아이디
+                      'data-is-payment="'+res.product.is_payment+'" ' + // 부모 아이디
+                      'data-isLens="'+res.product.is_lens+'" ' + // 렌즈 여부
+                      'data-parents-name="'+res.product.name+'" ' + // 부모 아이디
+                      'data-parents-price="'+res.product.customer_price+'" ' + // 부모 아이디
+                      'data-option-id="'+option.id+'" ' + // 옵션 아이디
+                      'data-option-name="'+option.name+'" ' + // 부모 아이디
+                      'data-price="'+optionDetail.price+'" ' + // 옵션 추가 가격
+                      'data-name="'+optionDetail.name+'" ' + // 옵션 명
+                      'data-id="'+optionDetail.id+'"' + // 옵션 아이디
+                      '>'+(optionDetail.sold_out ? '품절' : '장바구니')+'</button>\n' +
+                      '                            <img src="'+optionDetail.path+'" alt="">\n' +
+                      '                        </div>\n' +
+                      '                    </div>';
+            })
+          })
+        } else {
+          // 렌즈
+          res.product.ProductOptions.map(function(option){
+            option.ProductOptionDetails.map(function(optionDetail){
+              var axisHtml = '';
+              var i = 0;
+              while(i <= 180) {
+                axisHtml += '<option value="'+i+'">'+i+'</option>';
+                i += 5;
+              }
+
+              $('#detailOptions .total .btnboxes').prepend('<button id="addCartbutton" class="submit mr-1 addOption" style="background:#1b1be4;">장바구니 담기</button>')
+              $('#addCartbutton').attr('data-parents-id', res.product.id);
+              $('#addCartbutton').attr('data-isLens', res.product.is_lens);
+              $('#addCartbutton').attr('data-parents-name', res.product.name);
+              $('#addCartbutton').attr('data-parents-price', res.product.customer_price);
+              $('#addCartbutton').attr('data-option-id', option.id);
+              $('#addCartbutton').attr('data-option-name', option.name);
+              $('#addCartbutton').attr('data-price', optionDetail.price);
+              $('#addCartbutton').attr('data-name', optionDetail.name);
+              $('#addCartbutton').attr('data-id', optionDetail.id);
+              var diaHtml = '';
+              optionDetail.LensDiaOptions.map(function(diaoption){
+                diaHtml += '<option value="'+diaoption.name+'">'+diaoption.name+'</option>';
+              })
+              html += ' <div class="optionlist__item row">' +
+                      '<div class="optionlist__imgbox">\n' +
+                      '                        <div class="optionlist__header">\n' +
+                      '                            <h3>'+optionDetail.name+'</h3>\n' +
+
+                      '                        </div>\n' +
+                      '                        <div class="optionlist__thumb" data-path="'+optionDetail.path+'">\n' +
+                      '                            <button class="addOption" ' +
+                      'data-parents-id="'+res.product.id+'" ' + // 부모 아이디
+                      'data-is-payment="'+res.product.is_payment+'" ' + // 부모 아이디
+                      'data-isLens="'+res.product.is_lens+'" ' + // 렌즈 여부
+                      'data-parents-name="'+res.product.name+'" ' + // 부모 아이디
+                      'data-parents-price="'+res.product.customer_price+'" ' + // 부모 아이디
+                      'data-option-id="'+option.id+'" ' + // 옵션 아이디
+                      'data-option-name="'+option.name+'" ' + // 부모 아이디
+                      'data-price="'+optionDetail.price+'" ' + // 옵션 추가 가격
+                      'data-name="'+optionDetail.name+'" ' + // 옵션 명
+                      'data-id="'+optionDetail.id+'"' + // 옵션 아이디
+                      '>장바구니</button>\n' +
+                      '                            <img src="'+optionDetail.path+'" alt="">\n' +
+                      '                        </div>\n' +
+                      '</div>' +
+                      '      <div class="optionlist__optionbox flex-1 ml-4">' +
+                      '            <div class="form-row mb-4">\n' +
+                      '                <label for="name" class="form-label">SPH(근시) <span class="text-xs text-gray-500">0기준점 / 0.25단위</span></label>\n' +
+                      '                <div class="row">\n' +
+                      '                    <div class="input">' +
+                      '                       <input name="sph" id="sph" type="text" />' +
+                      '                    </div>\n' +
+                      '                </div>\n' +
+                      '            </div>' +
+                      '            <div class="form-row mb-4">\n' +
+                      '                <label for="name" class="form-label">CYL(난시) <span class="text-xs text-gray-500">0 기준점 / 0.25단위</span></label>\n' +
+                      '                <div class="row">\n' +
+                      '                    <div class="input">' +
+                      '                       <input name="cyl" id="cyl" type="text" />' +
+                      '                    </div>\n' +
+                      '                </div>\n' +
+                      '            </div>' +
+                      '            <div class="form-row mb-4">\n' +
+                      '                <label for="name" class="form-label">ADD(가입도)</label>\n' +
+                      '                <div class="row">\n' +
+                      '                    <div class="select">' +
+                      '                       <select name="add" id="add">' +
+                      '                          <option value="Low">Low</option>' +
+                      '                          <option value="Mid">Mid</option>' +
+                      '                          <option value="High">High</option>' +
+                      '                       </select>' +
+                      '                    </div>\n' +
+                      '                </div>\n' +
+                      '            </div>' +
+                      '            <div class="form-row mb-4">\n' +
+                      '                <label for="name" class="form-label">AXIS(축)</label>\n' +
+                      '                <div class="row">\n' +
+                      '                    <div class="select">' +
+                      '                       <select name="axis" id="axis">' + axisHtml + '</select>' +
+                      '                    </div>\n' +
+                      '                </div>\n' +
+                      '            </div>' +
+                      '            <div class="form-row mb-4">\n' +
+                      '                <label for="name" class="form-label">B.C(베이스커브)</label>\n' +
+                      '                <div class="row">\n' +
+                      '                    <div class="input"><input type="text" name="bc" id="bc"></div>\n' +
+                      '                </div>\n' +
+                      '            </div>' +
+                      '            <div class="form-row mb-4">\n' +
+                      '                <label for="name" class="form-label">DIA(렌즈 직경)</label>\n' +
+                      '                <div class="row">\n' +
+                      '                    <div class="select">' +
+                      '                       <select name="dia" id="dia">' + diaHtml + '</select>' +
+                      '                    </div>\n' +
+                      '                </div>\n' +
+                      '            </div>' +
+                      '       </div>' +
+                      '      </div>';
+            })
+          })
+        }
+
+        $('#optionlist').html('').html(html);
+      } else {
+      }
+    }).fail(function(error) {
+      alert('관리자에게 문의주세요.')
+    }).always(function(res){
+      if(res.success && res.product.is_lens) {
+        $('#detailOptions').addClass('is_lens');
+      } else {
+        $('#detailOptions').removeClass('is_lens');
+      }
+      setTimeout(function(){
+        $('#detailOptions').show();
+      }, 0);
+    });
+  }
+
+  function showDetailImage(id) {
+      $.ajax({
+        url: '/product/' + id,
+        type: 'get',
+      }).done(function(res){
+        if( res.success ) {
+          var html = '';
+          var nav = '';
+          res.product.ProductImages.map(function(img){
+            html += '<div class="img" data-path="'+img.path+'"><img src="/'+img.path+'" alt=""></div>';
+            nav += '<div class="img"><img src="/'+img.path+'" alt=""></div>';
+          })
+          $('#imageSlider .slider-for').html(html);
+          $('#imageSlider .slider-nav .slider').html(nav);
+        } else {
+          alert('이미지를 불러오는데 실패했습니다.');
+        }
+      }).fail(function(error) {
+        alert('관리자에게 문의주세요.')
+      }).always(function(res){
+        $('#imageSlider').show();
+        $('.slider-for').slick({
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          arrows: false,
+          fade: true,
+          asNavFor: '.slider-nav .slider'
+        });
+        $('.slider-nav .slider').slick({
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          asNavFor: '.slider-for',
+          dots: false,
+          arrows: false,
+          centerMode: true,
+          focusOnSelect: true,
+          centerPadding: '60px',
+          responsive: [
+            {
+              breakpoint: 650,
+              settings: {
+                slidesToShow: 1,
+              }
+            }
+          ]
+        });
+        $('.next-arrow').on('click', function(){
+          $('.slider-nav .slider').slick('slickNext');
+        });
+        $('.prev-arrow').on('click', function(){
+          $('.slider-nav .slider').slick('slickPrev');
+        });
+      });
+  }
+
+  function checkCart() {
+    var totalCount = 0;
+    var totalPrice = 0;
+    $('.reglist__item').each(function(idx, el) {
+      var count = $(el).find('.cnt').val();
+      var price = parseInt($(el).find('.form').data('price'), 10) + parseInt($(el).find('.form').data('parentsPrice'), 10);
+      totalCount += parseInt(count, 10);
+      totalPrice += parseInt(price, 10) * parseInt(count, 10);
+    });
+    $('#totalCount').val(totalCount);
+    $('#optionCount').text(numberWithCommas(totalCount));
+
+    $('#totalPrice').val(totalPrice);
+    $('#optionTotalPrice').text(numberWithCommas(totalPrice));
+  };
+  $(function(){
+
+    $(document).on('click', '#imageSlider .slider-for .img', function(){
+      var path = $(this).data('path');
+      showImageLayer('/'+path)
+    })
+    $(document).on('click', '#detailOptions .optionlist__thumb', function(){
+      var path = $(this).data('path');
+      showImageLayer(path)
+    })
+    $(document).on('click', '#imgLayer .close', function(){
+      $('html, body').css('overflow', 'auto');
+      $('#imgLayer').remove();
+    })
+    $(document).on('click', '#imgLayer .mobileclose', function(){
+      $('html, body').css('overflow', 'auto');
+      $('#imgLayer').remove();
+    })
+    // 이미지 슬라이드 팝업 닫기
+    // slick 초가화
+    $('#imageSlider .close').add('#imageSlider .mobileclose').on('click', function(){
+      $('#imageSlider .slider-for').removeClass('slick-initialized slick-slider').html('');
+      $('#imageSlider .slider-nav .slider').removeClass('slick-initialized slick-slider').html('');
+      $('#imageSlider').hide();
+    })
+    {% for popup in popups %}
+    if (getCookie("todayClose{{ popup.id }}") != "Y") {
+      $("#popup{{ popup.id }}").fadeIn(0);
+    }
+    {% endfor %}
+
+    $(document).on('click', '.addOption', function(e){
+      e.stopPropagation();
+      var prdId = $(this).data('id');
+      var isLens = $(this).data('islens');
+      var isPayment = $(this).data('is-payment') === true;
+      var that = $(this);
+      if($('#prd' + prdId).length > 0 ) {
+        alert('이미 등록된 상품입니다.');
+        $('#prd' + prdId).find('input').focus();
+      } else {
+        var formData = new FormData();
+        formData.append('productId', $(this).data('parentsId'));
+        formData.append('optionId', $(this).data('optionId'));
+        formData.append('optionDetailId', $(this).data('id'));
+        formData.append('is_payment', isPayment);
+        console.log('isLens', isLens);
+
+        if(isLens) {
+        // 렌즈일 경우
+          var option = {};
+          option.sph = $('#sph').val();
+          option.cyl = $('#cyl').val();
+          option.add = $('#add').val();
+          option.axis = $('#axis').val();
+          option.bc = $('#bc').val();
+          option.dia = $('#dia').val();
+          // 텍스트로 변환해서 전달
+          formData.append('lens_option', JSON.stringify(option));
+        }
+
+        $.ajax({
+          url: '/cart/add',
+          type: 'POST',
+          data: formData,
+          contentType: false,
+          processData: false
+        }).done(function(res){
+
+          if(res.success) {
+            var optionText = '';
+            if(res.data.lens_option) {
+              // 렌즈일 경우
+              var option = JSON.parse(res.data.lens_option);
+              optionText = option.sph + ' / ' +  option.cyl + ' / ' + option.add + ' / ' + option.axis + ' / ' + option.bc + ' / ' + option.dia;
+            }
+            var html = '';
+            var optionText = res.data.lens_option ? optionText : that.data('name');
+            html += ' <div class="reglist__item" id="prd'+that.data('id')+'">\n' +
+              '                        <div class="info">\n' +
+              '                            <h3>'+that.data('parentsName')+'</h3>\n' +
+              '                            <p>'+ optionText +'</p>\n' +
+              '                        </div>\n' +
+              '                        <div class="form" data-price="'+that.data('price')+'" data-parents-price="'+that.data('parentsPrice')+'">\n' +
+              '                            <button class="dec" data-cart-id="'+res.data.id+'">-</button>\n' +
+              '                            <input type="text" value="1" class="cnt" readonly>\n' +
+              '                            <button class="inc" data-cart-id="'+res.data.id+'">+</button>\n' +
+              '                        </div>\n' +
+              '                        <button class="delete" data-cart-id="'+res.data.id+'">삭제</button>' +
+              '                    </div>';
+
+            var addProductPrice = parseInt(that.data('parentsPrice'), 10) + parseInt(that.data('price'), 10);
+            var totalPrice = parseInt($('#totalPrice').val(), 10) + addProductPrice;
+            var totalCount = parseInt($('#totalCount').val(), 10);
+
+            $('#totalCount').val(totalCount + 1);
+            $('#optionCount').text(numberWithCommas(totalCount + 1));
+
+            $('#totalPrice').val(totalPrice);
+            $('#optionTotalPrice').text(numberWithCommas(totalPrice));
+
+            $('#reglist').append(html);
+            var count = $('#cart-count').text();
+            $('#cart-count').text(parseInt(count, 10) + 1);
+          }
+        }).fail(function(error) {
+          console.log(error);
+          alert('관리자에게 문의주세요.')
+        }).always(function(res){
+        });
+      }
+    })
+    $(document).on('click', '.inc', function(){
+      var value = $(this).parents('.form').find('.cnt').val();
+      var formData = new FormData();
+      var that = $(this);
+      formData.append('quantity', parseInt(value, 10) + 1);
+      $.ajax({
+        url: '/cart/quantity/' + $(this).data('cartId'),
+        type: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false
+      }).done(function(res){
+        if(res.success) {
+          that.parents('.form').find('.cnt').val(parseInt(value, 10) + 1);
+          checkCart();
+        }
+      }).fail(function(error) {
+        console.log(error);
+        alert('관리자에게 문의주세요.')
+      }).always(function(res){
+        var count = $('#cart-count').text();
+        $('#cart-count').text(parseInt(count, 10) + 1);
+      });
+    });
+
+
+    $(document).on('click', '.delete', function() {
+      // 삭제
+      var that = $(this);
+      $.ajax({
+        type: 'POST',
+        url: '/cart/delete/' + that.data('cartId'),
+      }).done(function(res){
+        if(res.success) {
+          var cnt = that.parents('.reglist__item').find('.cnt').val();
+          var count = $('#cart-count').text();
+          $('#cart-count').text(parseInt(count, 10) - parseInt(cnt, 10));
+
+          that.parents('.reglist__item').remove();
+
+        }
+      }).fail(function(error) {
+        alert('관리자에게 문의주세요.')
+      }).always(function(res){
+        checkCart();
+      });
+    });
+    $(document).on('click', '.dec', function(){
+      var value = $(this).parents('.form').find('.cnt').val();
+      if(parseInt(value, 10) - 1 < 1) {
+        alert('1보다 작을 수는 없습니다.')
+      } else {
+        var formData = new FormData();
+        var that = $(this);
+        formData.append('quantity', parseInt(value, 10) - 1);
+        $.ajax({
+          url: '/cart/quantity/' + $(this).data('cartId'),
+          type: 'POST',
+          data: formData,
+          contentType: false,
+          processData: false
+        }).done(function(res){
+          if(res.success) {
+            that.parents('.form').find('.cnt').val(parseInt(value, 10) - 1);
+            checkCart();
+          }
+        }).fail(function(error) {
+          console.log(error);
+          alert('관리자에게 문의주세요.')
+        }).always(function(res){
+          var count = $('#cart-count').text();
+          $('#cart-count').text(parseInt(count, 10) - 1);
+        });
+      }
+    });
+  })
+</script>
+{% endblock %}
+

@@ -1,0 +1,22 @@
+{% for popup in popups %}
+<div id="popup{{ popup.id }}"
+     class="mainPopup"
+     style="left:{{ popup.position_x }}px;top:{{ popup.position_y }}px;width: 100%;max-width: {{ popup.width }}px;"
+>
+    <div class="mainPopup__content">
+        <div class="mainPopup__body">
+            {% if popup.link %}
+            <a href="{{ popup.link }}" {% if popup.target_blank %}target="_blank"{% endif %}>
+                <img src="{{ popup.PopupImages[0].path }}" alt="">
+            </a>
+            {% else %}
+                <img src="{{ popup.PopupImages[0].path }}" alt="">
+            {% endif %}
+        </div>
+        <div class="mainPopup__footer">
+            <a href="javascript:closePopupToday({{ popup.id }})">오늘하루닫기</a>
+            <a href="javascript:closePopup({{ popup.id }});">닫기</a>
+        </div>
+    </div>
+</div>
+{% endfor %}

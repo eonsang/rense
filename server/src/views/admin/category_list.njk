@@ -1,0 +1,135 @@
+{% extends './layout/base.njk' %}
+
+{% block content %}
+
+    <!-- Start Content-->
+    <div class="container-fluid">
+
+        <!-- start page title -->
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box">
+                    <h4 class="page-title">카테고리 관리</h4>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-sm-4">
+                                <a href="/adm/category/create" class="btn btn-primary mb-2"><i class="mdi mdi-plus-circle mr-2"></i>카테고리 등록하기</a>
+                            </div>
+                            <div class="col-sm-8">
+                                <div class="text-sm-right">
+                                    <button type="button" class="btn btn-success mb-2 mr-1"><i class="mdi mdi-settings"></i></button>
+                                </div>
+                            </div><!-- end col-->
+                        </div>
+                        <table id="basic-datatable" class="table dt-responsive nowrap w-100">
+                            <colgroup>
+                                <col width="70">
+                                <col >
+                                <col width="70">
+                                <col width="100">
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>카테고리 명</th>
+                                <th>순서</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if objects.length > 0 %}
+                                {% for object in objects %}
+                                    <tr>
+                                        <td>{{ object.id }}</td>
+                                        <td>
+                                            <a href="/adm/category/detail/{{ object.id }}" class="text-body font-weight-semibold">
+                                                {{ object.name }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {{ object.order }}
+                                        </td>
+                                        <td>
+                                            <a href="/adm/category/detail/{{ object.id }}" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
+                                            <a href="javascript:removeCategory({{ object.id }})" id="delete" class="action-icon"> <i class="mdi mdi-delete"></i></a>
+                                        </td>
+                                    </tr>
+                                    {% if object.children %}
+                                        {% for category2 in object.children  %}
+                                            <tr>
+                                                <td>{{ object.id }}-{{ loop.index }}</td>
+                                                <td>
+                                                    <a href="/adm/category/detail/{{ category2.id }}" class="text-body font-weight-semibold pl-2">
+                                                        ㄴ {{ category2.name }}
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    {{ category2.order }}
+                                                </td>
+                                                <td>
+                                                    <a href="/adm/category/detail/{{ category2.id }}" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
+                                                    <a href="javascript:removeCategory({{ category2.id }})" id="delete" class="action-icon"> <i class="mdi mdi-delete"></i></a>
+                                                </td>
+                                            </tr>
+
+                                        {% if category2.children %}
+                                            {% for category3 in category2.children  %}
+                                                <tr>
+                                                    <td>{{ category3.id }}</td>
+                                                    <td>
+                                                        <a href="" class="text-body font-weight-semibold pl-4">
+                                                            {{ category3.name }}
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <a href="/adm/category/detail/{{ category3.id }}" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
+                                                        <a href="javascript:removeCategory({{ category3.id }})" id="delete" class="action-icon"> <i class="mdi mdi-delete"></i></a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="4">등록된 카테고리가 없습니다.</td>
+                                </tr>
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+      function removeCategory(id) {
+        if(confirm('삭제 하시겠습니까?')) {
+          $.ajax({
+            url: '/adm/category/delete/' + id,
+            type: 'post',
+          }).done(function(res) {
+            if(res.success) {
+              alert('삭제 되었습니다.')
+              location.href = '/adm/category'
+            }
+          })
+        }
+      };
+      $(document).ready(function(){
+
+      });
+    </script>
+{% endblock %}

@@ -1,0 +1,51 @@
+<div class="navbar-custom">
+    <ul class="list-unstyled topbar-right-menu float-right mb-0">
+
+        <li class="notification-list d-none d-sm-inline-block">
+            <a class="nav-link" href="/" target="_blank">
+                <i class="dripicons-home noti-icon" style="font-size: 18px;"></i>
+            </a>
+        </li>
+
+        <li class="dropdown notification-list">
+            <a class="nav-link dropdown-toggle nav-user arrow-none mr-0" data-toggle="dropdown" href="#" role="button" aria-haspopup="false"
+               aria-expanded="false">
+                <span class="account-user-avatar bg-primary rounded-circle overflow-hidden" style="width: 32px;height: 32px;">
+                    {% if loginUser.thumbnail %}
+                        <img src="{{ loginUser.thumbnail }}" class="rounded-circle" style="border: none;object-fit: cover;width: 100%;height: 100%;">
+                    {% endif %}
+                </span>
+                <span>
+                    <span class="account-user-name">{{ loginUser.name }}</span>
+                    <span class="account-position">{{ loginUser.role }}</span>
+                </span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right dropdown-menu-animated topbar-dropdown-menu profile-dropdown">
+                <!-- item-->
+                <div class=" dropdown-header noti-title">
+                    <h6 class="text-overflow m-0">Welcome ! {{ loginUser.name }}</h6>
+                </div>
+
+                <!-- item-->
+                <a href="/adm/user/{{ loginUser.id }}" class="dropdown-item notify-item">
+                    <i class="mdi mdi-account-circle mr-1"></i>
+                    <span>My Account</span>
+                </a>
+
+                <!-- item-->
+                <a href="{{ routes.adminSetting }}" class="dropdown-item notify-item">
+                    <i class="dripicons-gear mr-1"></i>
+                    <span>Settings</span>
+                </a>
+
+                <!-- item-->
+                <a href="/accounts/logout" class="dropdown-item notify-item">
+                    <i class="mdi mdi-logout mr-1"></i>
+                    <span>Logout</span>
+                </a>
+
+            </div>
+        </li>
+
+    </ul>
+</div>

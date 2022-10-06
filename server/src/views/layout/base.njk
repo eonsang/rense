@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="
+          width=device-width,initial-scale=1.0,minimum-scale=1.0 user-scalable=yes">
+<meta name="naver-site-verification" content="90da5075662984a4ad9075b7e5529473986efa3f" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="icon" sizes="16x16" href="{{ defaultInfo.favicon }}">
+    <title>{{ defaultInfo.title }}</title>
+    <meta name="description" content="{{ defaultInfo.og_description }}">
+    <meta name="keyword" content="{{ defaultInfo.keyword }}">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="{{ defaultInfo.og_title }}">
+    <meta property="og:url" content="{{ defaultInfo.og_url }}">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="http://smarteyemall.com{{ defaultInfo.og_image }}">
+    <meta property="og:site_name" content="{{ defaultInfo.og_title }}">
+    <meta property="og:description" content="{{ defaultInfo.og_description }}">
+    {{ defaultInfo.add_meta | safe }}
+
+    <link rel="canonical" href="http://smarteyemall.com">
+    <link rel="stylesheet" href="/static/plugins/slick/slick.css">
+    <link rel="stylesheet" href="/static/dist/css/main.css">
+
+    {{ defaultInfo.add_script | safe }}
+    {% block style %}
+    {% endblock %}
+</head>
+<body>
+
+<div class="wrapper">
+    {% block content %}
+    {% endblock %}
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.js"
+        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+        crossorigin="anonymous"></script>
+<script src="/static/plugins/slick/slick.js"></script>
+<script src="/static/common/common.js"></script>
+{% block script %}
+{% endblock %}
+</body>
+</html>

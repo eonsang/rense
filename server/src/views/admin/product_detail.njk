@@ -1,0 +1,851 @@
+{% extends './layout/base.njk' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-flex align-items-center">
+                <h4 class="page-title">상품 등록</h4>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <form action="" method="POST" id="form" enctype="multipart/form-data">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="category1">1차 카테고리 <span class="text-danger">*</span></label>
+                                    <select class="form-control category" data-toggle="select2" name="category1" id="category1" data-next="#category2" required>
+                                        <option value="">선택</option>
+                                        {% for obj in categories %}
+                                            <option value="{{ obj.id }}" {% if obj.id === product.Categories[0].id %} selected {% endif %} >{{ obj.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <script>
+                                    </script>
+                                    <span class="font-13 text-muted">1차 카테고리를 필수 선택요소 입니다.</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="category2">2차 카테고리</label>
+                                    <select class="form-control category" data-toggle="select2" name="category2" id="category2" data-next="#category3">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="is_lens">렌즈 여부 <span class="text-danger">*</span></label>
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" name="is_lens" id="is_lens" {% if product.is_lens %} checked {% endif %}>
+                                        <label class="custom-control-label" for="is_lens" >렌즈 상품 여부</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="is_lens">바로 결제 여부 <span class="text-danger">*</span></label>
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" name="is_payment" id="is_payment" {% if not product %} checked {% endif%}  {% if product.is_payment %} checked="true" {% else %} {% endif %}>
+                                        <label class="custom-control-label" for="is_payment" >바로 결제 여부</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="is_lens">상품 태그</label>
+                                    <div class="d-flex">
+                                        <div class="custom-control custom-checkbox mr-3">
+                                            <input type="checkbox" class="custom-control-input" name="is_new_item" id="is_new_item" {% if product.is_new_item %} checked {% endif %}>
+                                            <label class="custom-control-label" for="is_new_item" >NEW ITEM</label>
+                                        </div>
+                                        <div class="custom-control custom-checkbox mr-3">
+                                            <input type="checkbox" class="custom-control-input" name="is_new_color" id="is_new_color" {% if product.is_new_color %} checked {% endif %}>
+                                            <label class="custom-control-label" for="is_new_color" >NEW COLOR</label>
+                                        </div>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" name="is_best" id="is_best" {% if product.is_best %} checked {% endif %}>
+                                            <label class="custom-control-label" for="is_best" >BEST</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="title">상품명 <span class="text-danger">*</span></label>
+                                    <input class="form-control" type="text" placeholder="상품명" name="title" id="title" value="{{ product.name }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="customer_price">할인가 <span class="text-danger">*</span></label>
+                                    <input class="form-control" type="number" placeholder="할인가" name="customer_price" id="customer_price" value="{{ product.customer_price }}">
+                                    <span class="font-13 text-muted">고객이 구매하는 가격입니다.</span>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="price ">판매가 <span class="text-danger">*</span></label>
+                                    <input class="form-control" type="number" placeholder="판매가" name="price" id="price" value="{{ product.price }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="customer_price">정렬 순서 <span class="text-danger">*</span></label>
+                                    <input class="form-control" type="number" placeholder="정렬 순서" name="order" id="order" value="{{ product.order }}">
+                                    <span class="font-13 text-muted">내림차순으로 나열됩니다.</span>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="thumbnail">상품 이미지 <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" name="thumbnail" id="thumbnail" multiple>
+                                            <label class="custom-file-label" for="thumbnail">Choose file</label>
+                                        </div>
+                                        {% if product.id %}
+                                        <button type="submit" class="btn btn-primary" style="margin-left:10px;">저장</button>
+                                        {% endif %}
+                                    </div>
+                                    <span class="font-13 text-muted">여러 이미지를 등록할 수 있습니다.</span>
+                                    <div id="fileList" class="mt-2">
+                                        {% if product.ProductImages %}
+                                            <div class="media border p-2">
+                                                {% for image in product.ProductImages %}
+                                                    <div style="width: 65px;height: 65px;margin-right: 5px;border: 1px solid #ddd;cursor:pointer;" onclick="deleteFile({{ image.id }}, {{loop.index - 1}});">
+                                                        <img src="/{{ image.path }}" alt="" style="width: 100%;height: 100%;object-fit: cover;">
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="thumbnail">착용 연예인</label>
+                                    <input class="form-control" type="text" placeholder="착용 연예인" name="entertainer" id="entertainer" value="{{ product.entertainer }}">
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="memo">상점 메모</label>
+                                    <textarea class="form-control" name="memo" id="memo" style="height: 150px;">{{ product.memo }}</textarea>
+                                    <span class="font-13 text-muted">상품에 대한 메모입니다. 고객에게 노출되지 않습니다.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="example-textarea">상품 상세내용</label>
+                                    <div id="" class="textEditor"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="description">상품 소개</label>
+                                    <textarea class="form-control" name="description" id="description" placeholder="상품 소개글" >{{ product.description }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="maker">제조사</label>
+                                    <input class="form-control" type="text" placeholder="제조사" name="maker" id="maker" value="{{ product.maker }}">
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="originplace">원산지</label>
+                                    <input class="form-control" type="text" placeholder="원산지" name="originplace" id="originplace" value="{{ product.origin }}">
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="brand">브랜드</label>
+                                    <input class="form-control" type="text" placeholder="브랜드" name="brand" id="brand" value="{{ product.brand }}">
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="model">모델</label>
+                                    <input class="form-control" type="text" placeholder="모델" name="model" id="model" value="{{ product.model }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="use">상품 노출</label>
+                                    <div class="custom-control custom-checkbox">
+                                        {% if product.id %}
+                                        <input type="checkbox" class="custom-control-input" name="use" id="use" {% if product.use  %} checked {% endif %}>
+                                        {% else %}
+                                            <input type="checkbox" class="custom-control-input" name="use" id="use" checked>
+                                        {% endif %}
+                                        <label class="custom-control-label" for="use" >상품 노출여부</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="sold_out">품절</label>
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" name="sold_out" id="sold_out" {% if product.sold_out %} checked {% endif %}>
+                                        <label class="custom-control-label" for="sold_out">품절 여부</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row" id="optionArea">
+                            <div class="col-12">
+                                <div class="d-flex align-items-center">
+                                    <label for="">상품 옵션관리</label>
+                                    <button type="button" class="btn btn-primary toggleSampleOptionBox" onclick="$('#sampleOptionBox').show()" style="margin-left: auto;">옵션 불러오기</button>
+                                    <button type="button" class="btn btn-primary addOptionItem" style="margin-left: 10px;">상품옵션 추가</button>
+                                </div>
+
+                                <style>
+                                    #sampleOptionBox{display: none;}
+                                    .sampleoptions button{background: none;border: none;display: block;line-height: 35px;padding:0 10px;width: 100%;text-align: left;border-bottom: 1px solid #eee;}
+                                    .sampleoptions button:hover{background:#eee;}
+                                </style>
+                                <div class="card mt-2" id="sampleOptionBox">
+                                    <div class="card-body">
+                                        {% for option in options %}
+                                            <div class="sampleoptions">
+                                                <button type="button" onclick="setSampleOption('{{ option.id }}')">{{ option.name }}</button>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <div id="optionList" class="optionList mt-2">
+                                    {% for productOption in product.ProductOptions %}
+                                        <div class="card optionItem" id="optionItem{{ productOption.id }}">
+                                            <input type="hidden" name="optionItemId" value="{{ productOption.id }}">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-2">
+                                                        <div class="form-group">
+                                                            <label for="billing-email-address">옵션제목</label>
+                                                            <input class="form-control" type="text" placeholder="상품 소개글" name="option_name" value="{{ productOption.name }}">
+                                                            <span class="font-13 text-muted">ex) 컬러, 사이즈 등</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-10">
+                                                        <label for="">옵션별 상세(오름차순 정렬)</label>
+                                                        <div class="optionListDetail">
+                                                            {% for option in productOption.ProductOptionDetails %}
+                                                                <div class="row " id="row{{ option.id }}">
+                                                                    <input type="hidden" name="option_id" value="{{ option.id }}">
+                                                                    <div class="col-1">
+                                                                        <div class="custom-control custom-checkbox">
+                                                                            <input type="checkbox" class="custom-control-input" name="option_sold_out" id="option_sold_out{{ option.id }}"  {% if option.sold_out %} checked {% endif %}>
+                                                                            <label class="custom-control-label" for="option_sold_out{{ option.id }}"> 품절</label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-1">
+                                                                        <div class="form-group">
+                                                                            <input class="form-control" type="text" placeholder="순서" name="option_order" value="{{ option.order }}">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-3">
+                                                                        <div class="form-group">
+                                                                            <input class="form-control" type="text" placeholder="옵션명" name="option_name" value="{{ option.name }}">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-3">
+                                                                        <div class="form-group">
+                                                                            <div class="input-group">
+                                                                                <div class="custom-file">
+                                                                                    <input type="file" class="custom-file-input option_thumbnail" name="option_thumbnail">
+                                                                                    <input type="hidden" name="option_thumbnail_path" value="{{ option.path }}">
+                                                                                    <label class="custom-file-label" for="option_thumbnail">{{ option.path }}</label>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-3">
+                                                                        <div class="form-group">
+                                                                            <input class="form-control" type="text" placeholder="가격" name="option_price" value="{{ option.price }}">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-1">
+                                                                        <button type="button" class="btn btn-outline-danger" onclick="deleteOptionDetail({{ option.id }}, {{ loop.index - 1 }});">삭제</button>
+                                                                    </div>
+                                                                </div>
+                                                            {% endfor %}
+                                                        </div>
+                                                        <button type="button" class="btn btn-primary addOptionDetailRow" style="margin-left: auto;">옵션별 상세 추가</button>
+                                                        <button type="button" class="btn btn-danger" style="margin-left: auto;" onclick="deleteOption({{ productOption.id }});">옵션 삭제</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!--
+                        <div class="row" id="diaOptionArea">
+                            <div class="col-12">
+                                <div class="d-flex align-items-center">
+                                    <label for="">렌즈 상품 DIA 옵션 관리</label>
+                                </div>
+                                <div class="optionList mt-2">
+                                    <div class="card" id="">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="optionListDIADetail">
+                                                        {% for option in product.ProductOptions[0].ProductOptionDetails[0].LensDiaOptions %}
+                                                        <div class="row" id="rowDIA{{ option.id }}">
+                                                            <input type="hidden" name="option_dia_id" value="{{ option.id }}">
+                                                            <div class="col-11">
+                                                                <div class="form-group">
+                                                                    <input class="form-control" type="text" placeholder="옵션명" name="dia_option_name" value="{{ option.name }}">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-1">
+                                                                <button type="button" class="btn btn-outline-danger" onclick="deleteOptionDetailDIA({{ option.id }}, {{ loop.index - 1 }});">삭제</button>
+                                                            </div>
+                                                        </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                    <button type="button" class="btn btn-primary addOptionDetailRowDIA" style="margin-left: auto;">옵션별 상세 추가</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        -->
+                        <hr>
+                        <div class="mt-3 d-flex">
+                                 <a href="/adm/product" class="btn btn-secondary">뒤로가기</a>
+                            <button type="button" id="delete" class="btn btn-danger ml-auto mr-1">삭제</button>
+                            <button type="submit" class="btn btn-primary">저장</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block css %}
+<link href="/static/admin/css/vendor/summernote-bs4.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block script %}
+<script src="/static/admin/js/vendor/summernote-bs4.min.js"></script>
+<script src="/static/admin/js/vendor/summernote-ko-KR.min.js"></script>
+<script>
+  var filesTempArr = [];
+  $(function(){
+
+    if({{ product.Categories[0].id or 0 }}) {
+      var that = $('[name="category1"]');
+      $.ajax({
+        type: "GET",
+        url: "/adm/category/child",
+        data: {
+          id: parseInt('{{ product.Categories[0].id or '-' }}', 10),
+        },
+      }).done(function (res) {
+        if (res.success) {
+          console.log(parseInt('{{ product.Categories[0].id or '-' }}', 10));
+          console.log(parseInt('{{ product.Categories[1].id or '-' }}', 10));
+          var options = '<option value="">선택</option>';
+          res.objects.map(function (data) {
+            var selected = '';
+            if (data.id === parseInt('{{ product.Categories[1].id or '-' }}')) {
+              selected = 'selected';
+            }
+            options +=
+              '<option value="' + data.id + '" '+ selected +'>' + data.name + "</option>";
+          });
+          var nextSelector = that.data("next");
+          $(nextSelector).html(options);
+
+          if($('[name="category2"]').val()) {
+            var that2 = $('[name="category2"]');
+            $.ajax({
+              type: "GET",
+              url: "/adm/category/child",
+              data: {
+                id: that2.val(),
+              },
+            }).done(function (res) {
+              if (res.success) {
+                var options = '<option value="">선택</option>';
+                res.objects.map(function (data) {
+                  console.log(data, {{ product.Categories[2].id }});
+                  var selected = '';
+                  if (data.id === parseInt('{{ product.Categories[2].id or '-' }}')) {
+                    selected = 'selected';
+                  }
+                  options +=
+                    '<option value="' + data.id + '" '+ selected +'>' + data.name + "</option>";
+                });
+                var nextSelector = that2.data("next");
+                $(nextSelector).html(options);
+              } else {
+                alert("하위 카테고리 불러오기 실패");
+              }
+            });
+          }
+        } else {
+          alert("하위 카테고리 불러오기 실패");
+        }
+      });
+    }
+
+    $('.textEditor').eq(0).summernote('code', `{{ product.content | safe }}`)
+    $(document).on('change', '.option_thumbnail', function(e){
+      fileUploadForGetPath(e.target.files[0], this);
+    });
+    $('#delete').on('click', function(){
+      if(confirm('삭제 하시겠습니까?')) {
+        $.ajax({
+          url: '/adm/product/remove/{{ product.id }}',
+          type: 'post',
+        }).done(function(res) {
+          if(res.success) {
+            alert('삭제 되었습니다.')
+            location.href = '/adm/product'
+          }
+        }).fail(function(err){
+          console.log(err);
+        })
+      }
+    });
+
+    $('#form').submit(function(e){
+      e.preventDefault();
+      var content = $('.textEditor').eq(0).summernote('code');
+      var formData = new FormData();
+      formData.append('category1', category1.value);
+      formData.append('category2', category2.value);
+      // formData.append('category3', category3.value);
+      formData.append('name', title.value);
+      formData.append('price', price.value);
+      formData.append('entertainer', entertainer.value);
+      formData.append('customer_price', customer_price.value);
+      formData.append('order', order.value);
+      console.log(filesTempArr);
+      for(var i=0, filesTempArrLen = filesTempArr.length; i<filesTempArrLen; i++) {
+        formData.append("thumbnail", filesTempArr[i]);
+      }
+      formData.append('memo', memo.value);
+      formData.append('content', content);
+      formData.append('description', description.value);
+      formData.append('maker', maker.value);
+      formData.append('origin', originplace.value);
+      formData.append('brand', brand.value);
+      formData.append('model', model.value);
+      if($('#use').is(':checked')) {
+        formData.append('use', 'on');
+      } else {
+        formData.append('use', 'off');
+      }
+      if($('#sold_out').is(':checked')) {
+        formData.append('sold_out', 'on');
+      } else {
+        formData.append('sold_out', 'off');
+      }
+      if($('#is_lens').is(':checked')) {
+        formData.append('is_lens', 'on');
+      } else {
+        formData.append('is_lens', 'off');
+      }
+
+      if($('#is_new_item').is(':checked')) {
+        formData.append('is_new_item', 'on');
+      } else {
+        formData.append('is_new_item', 'off');
+      }
+
+      if($('#is_new_color').is(':checked')) {
+        formData.append('is_new_color', 'on');
+      } else {
+        formData.append('is_new_color', 'off');
+      }
+
+      if($('#is_best').is(':checked')) {
+        formData.append('is_best', 'on');
+      } else {
+        formData.append('is_best', 'off');
+      }
+
+      if($('#is_payment').is(':checked')) {
+        formData.append('is_payment', 'on');
+      } else {
+        formData.append('is_payment', 'off');
+      }
+
+
+      var optionsArr = [];
+      $('.optionItem').each(function(){
+        var optionObj = {};
+        optionObj.id = $(this).find('[name="optionItemId"]').val();
+        optionObj.name = $(this).find('[name="option_name"]').val();
+        optionObj.list = [];
+        $(this).find('.optionListDetail .row').each(function(){
+          var optionDetailObj = {};
+          optionDetailObj.id = $(this).find('[name="option_id"]').val();
+          optionDetailObj.name = $(this).find('[name="option_name"]').val();
+          optionDetailObj.path = $(this).find('[name="option_thumbnail_path"]').val();
+          optionDetailObj.price = $(this).find('[name="option_price"]').val();
+        optionDetailObj.sold_out = $(this).find('[name="option_sold_out"]').is(':checked') ? 'on' : 'off';
+          optionDetailObj.order = $(this).find('[name="option_order"]').val();
+          optionObj.list.push(optionDetailObj);
+        })
+        optionsArr.push(optionObj);
+      });
+      formData.append('optionInfo', JSON.stringify(optionsArr));
+
+      var diaOptionArr = [];
+      $('.optionListDIADetail .row').each(function(){
+        var diaOptionObj = {};
+        diaOptionObj.id = $(this).find('[name="option_dia_id"]').val();
+        diaOptionObj.name = $(this).find('[name="dia_option_name"]').val();
+        diaOptionArr.push(diaOptionObj);
+      });
+      formData.append('diaOptionInfo', JSON.stringify(diaOptionArr));
+
+
+      var url = '{{ product.name }}' === '' ? '/adm/product/create' : '/adm/product/detail/{{ product.id }}';
+      $.ajax({
+        url: url,
+        type: 'post',
+        data: formData,
+        contentType: false,
+        processData: false,
+      }).done(function(data){
+        if(data.success) {
+          alert('등록이 완료되었습니다.');
+          location.href="/adm/product/detail/"+data.id
+        }
+      }).fail(function(error) {
+        console.error(error);
+      })
+    });
+
+    $(document).on('click', '.addOptionDetailRow', function(){
+      $(this).parents('.optionItem').find('.optionListDetail').append('' +
+        '<div class="row">\n' +
+        '\n' +
+        '                                                                    <div class="col-1">\n' +
+        '                                                                        <div class="form-group">\n' +
+        '                                                                            <input class="form-control" type="text" placeholder="순서" name="option_order">\n' +
+        '                                                                        </div>\n' +
+        '                                                                    </div>' +
+        '                                                            <div class="col-4">\n' +
+        '                                                                <div class="form-group">\n' +
+        '                                                                    <input class="form-control" type="text" placeholder="옵션명" name="option_name">\n' +
+        '                                                                </div>\n' +
+        '                                                            </div>\n' +
+        '                                                            <div class="col-3">\n' +
+        '                                                                <div class="form-group">\n' +
+        '                                                                    <div class="input-group">\n' +
+        '                                                                        <div class="custom-file">\n' +
+        '                                                                            <input type="file" class="custom-file-input option_thumbnail" name="option_thumbnail">\n' +
+        '                                                                            <input type="hidden" name="option_thumbnail_path" value="">\n' +
+        '                                                                            <label class="custom-file-label" for="option_thumbnail">상품 이미지</label>\n' +
+        '                                                                        </div>\n' +
+        '                                                                    </div>\n' +
+        '                                                                </div>\n' +
+        '                                                            </div>\n' +
+        '                                                            <div class="col-3">\n' +
+        '                                                                <div class="form-group">\n' +
+        '                                                                    <input class="form-control" type="text" placeholder="가격" name="option_price">\n' +
+        '                                                                </div>\n' +
+        '                                                            </div>\n' +
+        '                                                        </div>');
+    })
+
+    $(document).on('click', '.addOptionDetailRowDIA', function(){
+      $(this).parents('.optionList').find('.optionListDIADetail').append('' +
+        '<div class="row">\n' +
+        '                                                            <div class="col-11">\n' +
+        '                                                                <div class="form-group">\n' +
+        '                                                                    <input class="form-control" type="text" placeholder="옵션명" name="dia_option_name">\n' +
+        '                                                                </div>\n' +
+        '                                                            </div>\n' +
+        '                                                        </div>');
+    })
+
+    $('.addOptionItem').on('click', function(){
+      $('#optionList').append('\n' +
+        '                                    <div class="card optionItem">\n' +
+        '                                        <div class="card-body">\n' +
+        '                                            <div class="row">\n' +
+        '                                                <div class="col-3">\n' +
+        '                                                    <div class="form-group">\n' +
+        '                                                        <label for="billing-email-address">옵션제목</label>\n' +
+        '                                                        <input class="form-control" type="text" placeholder="상품 소개글" name="option_name">\n' +
+        '                                                        <span class="font-13 text-muted">ex) 컬러, 사이즈 등</span>\n' +
+        '                                                    </div>\n' +
+        '                                                </div>\n' +
+        '                                                <div class="col-9">\n' +
+        '                                                    <label for="">옵션별 상세</label>\n' +
+        '                                                    <div class="optionListDetail">\n' +
+        '                                                        <div class="row">\n' +
+        '                                                                    <div class="col-1">\n' +
+        '                                                                        <div class="form-group">\n' +
+        '                                                                            <input class="form-control" type="text" placeholder="순서" name="option_order">\n' +
+        '                                                                        </div>\n' +
+        '                                                                    </div>' +
+        '                                                            <div class="col-4">\n' +
+        '                                                                <div class="form-group">\n' +
+        '                                                                    <input class="form-control" type="text" placeholder="옵션명" name="option_name">\n' +
+        '                                                                </div>\n' +
+        '                                                            </div>\n' +
+        '                                                            <div class="col-3">\n' +
+        '                                                                <div class="form-group">\n' +
+        '                                                                    <div class="input-group">\n' +
+        '                                                                        <div class="custom-file">\n' +
+        '                                                                            <input type="file" class="custom-file-input option_thumbnail" name="option_thumbnail">\n' +
+        '                                                                            <input type="hidden" name="option_thumbnail_path" value="">\n' +
+        '                                                                            <label class="custom-file-label" for="option_thumbnail">상품 이미지</label>\n' +
+        '                                                                        </div>\n' +
+        '                                                                    </div>\n' +
+        '                                                                </div>\n' +
+        '                                                            </div>\n' +
+        '                                                            <div class="col-3">\n' +
+        '                                                                <div class="form-group">\n' +
+        '                                                                    <input class="form-control" type="text" placeholder="가격" name="option_price">\n' +
+        '                                                                </div>\n' +
+        '                                                            </div>\n' +
+        '                                                        </div>\n' +
+        '                                                    </div>\n' +
+        '                                                    <button type="button" class="btn btn-primary addOptionDetailRow" style="margin-left: auto;">옵션별 상세 추가</button>\n' +
+        '                                                </div>\n' +
+        '                                            </div>\n' +
+        '                                        </div>\n' +
+        '                                    </div>')
+    });
+  })
+
+  $(document).ready(function() {
+    $("#thumbnail").on("change", addFiles);
+  });
+
+  function addFiles(e) {
+    var files = e.target.files;
+    var filesArr = Array.prototype.slice.call(files);
+    var filesArrLen = filesArr.length;
+    var filesTempArrLen = filesTempArr.length;
+    for( var i=0; i<filesArrLen; i++ ) {
+      filesTempArr.push(filesArr[i]);
+    }
+  }
+
+  function deleteFile (id, idx) {
+    var imgLen = $('#fileList .media div').length;
+    if(imgLen === 1) {
+      alert('최소 하나 이상의 상품이미지가 필요합니다.');
+      return false;
+    }
+    if( !confirm('이미지를 삭제 하시겠습니까?') ) {
+      return false;
+    }
+    $.ajax({
+      url: '/adm/product/image/delete/' + id,
+      type: 'post',
+      contentType: false,
+      processData: false,
+    }).done(function(data){
+      if(data.success) {
+        alert('이미지가 삭제되었습니다.');
+        $('#fileList .media div').eq(idx).remove();
+        location.reload();
+      }
+    }).fail(function(error) {
+      console.error(error);
+    });
+  }
+
+  function deleteOption(id) {
+    if( !confirm('옵션을 삭제 하시겠습니까?') ) {
+      return false;
+    }
+    $.ajax({
+      url: '/adm/product/option/delete/' + id,
+      type: 'post',
+      contentType: false,
+      processData: false,
+    }).done(function(data){
+      if(data.success) {
+        alert('옵션이 삭제되었습니다.');
+        $('#optionItem' + id).remove();
+      }
+    }).fail(function(error) {
+      console.error(error);
+    });
+  }
+
+  function deleteOptionDetail(id) {
+    if( !confirm('옵션을 삭제 하시겠습니까?') ) {
+      return false;
+    }
+    $.ajax({
+      url: '/adm/product/optionDetail/delete/' + id,
+      type: 'post',
+      contentType: false,
+      processData: false,
+    }).done(function(data){
+      if(data.success) {
+        alert('옵션이 삭제되었습니다.');
+        $('#row' + id).remove();
+      }
+    }).fail(function(error) {
+      console.error(error);
+    });
+  }
+
+  function deleteOptionDetailDIA(id) {
+    if( !confirm('옵션을 삭제 하시겠습니까?') ) {
+      return false;
+    }
+    $.ajax({
+      url: '/adm/product/optionDetailDIA/delete/' + id,
+      type: 'post',
+      contentType: false,
+      processData: false,
+    }).done(function(data){
+      if(data.success) {
+        alert('옵션이 삭제되었습니다.');
+        $('#rowDIA' + id).remove();
+      }
+    }).fail(function(error) {
+      console.error(error);
+    });
+  }
+
+
+
+  // is_lens
+  $(function(){
+    $('#is_lens').on('change', function(e){
+      var isChecked = e.target.checked;
+      // if(isChecked) {
+      //   $('#optionArea').hide();
+      // } else {
+      //   $('#optionArea').show();
+      // }
+    })
+  })
+
+  function setSampleOption(id) {
+    $.ajax({
+      url: '/adm/options/json/' + id,
+      type: 'get',
+    }).done(function(data){
+      var list = JSON.parse(data.option.objects);
+      console.log(list);
+
+      var listHtml = "";
+      list.map(function(item) {
+        listHtml += '                                                        <div class="row">\n' +
+          '                                                                    <div class="col-1">\n' +
+          '                                                                        <div class="form-group">\n' +
+          '                                                                            <input class="form-control" type="text" placeholder="순서" name="option_order" value="'+item.order+'">\n' +
+          '                                                                        </div>\n' +
+          '                                                                    </div>' +
+          '                                                            <div class="col-4">\n' +
+          '                                                                <div class="form-group">\n' +
+          '                                                                    <input class="form-control" type="text" placeholder="옵션명" name="option_name" value="'+item.name+'">\n' +
+          '                                                                </div>\n' +
+          '                                                            </div>\n' +
+          '                                                            <div class="col-3">\n' +
+          '                                                                <div class="form-group">\n' +
+          '                                                                    <div class="input-group">\n' +
+          '                                                                        <div class="custom-file">\n' +
+          '                                                                            <input type="file" class="custom-file-input option_thumbnail" name="option_thumbnail">\n' +
+          '                                                                            <input type="hidden" name="option_thumbnail_path" value="'+item.path+'">\n' +
+          '                                                                            <label class="custom-file-label" for="option_thumbnail">상품 이미지</label>\n' +
+          '                                                                        </div>\n' +
+          '                                                                    </div>\n' +
+          '                                                                </div>\n' +
+          '                                                            </div>\n' +
+          '                                                            <div class="col-3">\n' +
+          '                                                                <div class="form-group">\n' +
+          '                                                                    <input class="form-control" type="text" placeholder="가격" name="option_price" value="'+item.price+'">\n' +
+          '                                                                </div>\n' +
+          '                                                            </div>\n' +
+          '                                                        </div>\n'
+      })
+
+      $('#optionList').append('\n' +
+        '                                    <div class="card optionItem">\n' +
+        '                                        <div class="card-body">\n' +
+        '                                            <div class="row">\n' +
+        '                                                <div class="col-3">\n' +
+        '                                                    <div class="form-group">\n' +
+        '                                                        <label for="billing-email-address">옵션제목</label>\n' +
+        '                                                        <input class="form-control" type="text" placeholder="상품 소개글" name="option_name" value="'+data.option.name+'">\n' +
+        '                                                        <span class="font-13 text-muted">ex) 컬러, 사이즈 등</span>\n' +
+        '                                                    </div>\n' +
+        '                                                </div>\n' +
+        '                                                <div class="col-9">\n' +
+        '                                                    <label for="">옵션별 상세</label>\n' +
+        '                                                    <div class="optionListDetail">\n' +
+        listHtml +
+        '                                                    </div>\n' +
+        '                                                    <button type="button" class="btn btn-primary addOptionDetailRow" style="margin-left: auto;">옵션별 상세 추가</button>\n' +
+        '                                                </div>\n' +
+        '                                            </div>\n' +
+        '                                        </div>\n' +
+        '                                    </div>')
+    });
+
+    $('#sampleOptionBox').hide();
+  }
+</script>
+{% endblock %}

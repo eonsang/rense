@@ -1,0 +1,101 @@
+{% extends 'layout/base.njk' %}
+
+{% block content %}
+    <div class="accounts accounts--login">
+        <div class="wrap">
+            <div class="accounts__logo">
+                <img src="/static/images/logo-new.jpg" alt="한빛안경랜드">
+            </div>
+            {{ message }}
+            <form action="" method="POST" class="block" id="form">
+                <div class="form">
+                    <div class="form-row">
+                        <div class="row">
+                            <div class="input">
+                                <input type="text" name="text" id="email" placeholder="연락처">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="row">
+                            <div class="input">
+                                <input type="password" name="password" id="password" placeholder="비밀번호">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-savelogin">
+                    <label for="savelogin" class="checkbox">
+                        <input type="checkbox" hidden name="savelogin" id="savelogin" checked>
+                        <span class="mr-1"></span>
+                        <p>자동 로그인</p>
+                    </label>
+                </div>
+                <div class="form-btnbox">
+                    <button type="submit" class="submit">로그인</button>
+                </div>
+            </form>
+            <div class="accounts-etc">
+                <a href="/accounts/signup">회원가입</a>
+            </div>
+{#            <a href="{{ routes.accounts + routes.kakao }}">카카오 로그인</a>#}
+{#            <a href="{{ routes.accounts + routes.naver }}">네이버 로그인</a>#}
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+      $(function(){
+        var savedEmail = getCookie("saveEmail");
+        var savePassword = getCookie("savePassword");
+
+
+        function submitajax() {
+          $.ajax({
+          url: '/accounts/login',
+          type: 'post',
+          data: {
+            email: $('#email').val(),
+            password: $('#password').val()
+          },
+        }).done(function(res){
+          if( res.success ) {
+            if($('#savelogin').is(':checked') === true) {
+              setCookie("saveEmail", $('#email').val(), 30);
+              setCookie("savePassword", $('#password').val(), 30);
+            } else {
+              deleteCookie("saveEmail");
+            }
+            alert(res.name + '님 반갑습니다.');
+            location.href='/';
+          } else {
+            alert('아이디 혹은 비밀번호를 확인해주세요.');
+          }
+        }).fail(function(error) {
+          alert('관리자에게 문의주세요.')
+        });
+        }
+
+        $('#form').submit(function(e){
+          e.preventDefault();
+          submitajax();
+        
+        });
+        if(savedEmail) {
+          $('#email').val(savedEmail);
+        }
+        if(savePassword) {
+          $('#password').val(savePassword);
+        }
+
+        if(savedEmail && savePassword) {
+          submitajax();
+        }
+
+
+        
+
+      })
+    </script>
+{% endblock %}

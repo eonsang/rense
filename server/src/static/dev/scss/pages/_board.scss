@@ -1,0 +1,59 @@
+.board {
+  padding-top: 40px;
+  @apply flex;
+  .wrap {
+    max-width: 670px;
+    margin:0 auto;
+  }
+  .board__title {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+  table {
+    table-layout: fixed;
+    width: 100%;
+    text-align: center;
+  }
+
+  .board__table {
+    th {
+      height: 45px;
+      @apply border-b border-gray-300;
+    }
+    td {
+      height: 45px;
+      @apply border-b border-gray-200;
+    }
+
+    a {
+      text-align: left;
+      display: block;
+    }
+  }
+  .board__table2 {
+    th, td {
+      @apply border border-gray-400;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      @apply bg-gray-300;
+    }
+
+  }
+
+  .board__btnbox {
+    margin-top: 30px;
+    @apply flex justify-end;
+
+    .button {
+      @apply bg-gray-500 text-white;
+      line-height: 40px;
+      padding:0 1em;
+      border-radius: 5px;
+    }
+  }
+}

@@ -1,0 +1,220 @@
+{% extends './layout/base.njk' %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box">
+                    <h4 class="page-title">상품 관리</h4>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-sm-12">
+                                <a href="/adm/product/create" class="btn btn-primary mb-2"><i class="mdi mdi-plus-circle mr-2"></i>상품 등록하기</a>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-centered table-striped dt-responsive nowrap w-100" id="products-datatable">
+                                <thead>
+                                <tr>
+                                    <th style="width: 20px;">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="customCheck1" d>
+                                            <label class="custom-control-label" for="customCheck1">&nbsp;</label>
+                                        </div>
+                                    </th>
+                                    <th>id</th>
+                                    <th>이미지</th>
+                                    <th>상품명</th>
+                                    <th>카테고리1</th>
+                                    <th>카테고리2</th>
+                                    <th>상품 노출</th>
+                                    <th>품절 여부</th>
+                                    <th>판매가격 / 원가</th>
+                                    <th>노출 순서</th>
+                                    <th>판매수</th>
+                                    <th>등록일자</th>
+                                    <th style="width: 75px;">Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for product in products %}
+                                    <tr>
+                                        <td>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="customCheck13">
+                                                <label class="custom-control-label" for="customCheck13">&nbsp;</label>
+                                            </div>
+                                        </td>
+                                        <td>{{ product.id }}</td>
+                                        <td>
+                                            <div style="width: 65px;height: 65px;margin-right: 5px;border: 1px solid #ddd;">
+                                                <img src="/{{ product.ProductImages[0].path }}" alt="" style="width: 100%;height: 100%;object-fit: cover;">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="/adm/product/detail/{{ product.id }}">
+                                                {{ product.name }}
+                                            </a>
+                                        </td>
+                                        <td>{{ product.Categories[0].name }}</td>
+                                        <td>{{ product.Categories[1].name or '-' }}</td>
+                                        <td>
+                                            <span hidden>{{ product.use }}</span>
+                                            <div class="custom-checkbox mt-1">
+                                                <input type="checkbox" class="is_use" id="use-{{ product.id }}" name="use" data-id="{{ product.id }}" {% if product.use %} checked {% endif %} data-switch="primary"/>
+                                                <label for="use-{{ product.id }}" data-on-label="On" data-off-label="Off"></label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span hidden>{{ product.sold_out }}</span>
+                                            <div class="custom-checkbox mt-1">
+                                                <input type="checkbox" class="is_sold_out" id="sold_out-{{ product.id }}" name="sold_out" data-id="{{ product.id }}" {% if product.sold_out %} checked {% endif %} data-switch="primary"/>
+                                                <label for="sold_out-{{ product.id }}" data-on-label="On" data-off-label="Off"></label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {{ product.customer_price | comma }} / {{ product.price | comma }}
+                                        </td>
+                                        <td>
+                                            {{ product.order }}
+                                        </td>
+                                        <td>
+                                            {{ product.sold_count }}
+                                        </td>
+                                        <td>
+                                            {{ product.createdAt | date("YYYY-MM-DD")   }}
+                                        </td>
+                                        <td>
+                                            <a href="/adm/product/detail/{{ product.id }}" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
+                                            <a href="javascript:removeProductAjax({{ product.id }})" class="action-icon"> <i class="mdi mdi-delete"></i></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <button class="btn btn-danger mb-2" onclick="return removeProduct()">선택 삭제</button>
+                            </div>
+                        </div>
+                    </div> <!-- end card-body-->
+                </div> <!-- end card-->
+            </div> <!-- end col -->
+        </div>
+        <!-- end row -->
+    </div> <!-- container -->
+{% endblock %}
+
+{% block script %}
+    <script>
+      function removeProductAjax(checkedProduct) {
+        if(checkedProduct.length > 0 || typeof(checkedProduct) === 'number') {
+          if(confirm('정말 삭제하시겠습니까?')) {
+            $.ajaxSettings.traditional = true;
+            $.ajax({
+              url: '/adm/product/remove',
+              type: 'post',
+              data: {
+                checkedProduct: checkedProduct
+              },
+            }).done(function(data){
+              if(data.success === true) {
+               location.reload();
+              } else {
+                alert('상품 삭제 실패');
+              }
+            }).fail(function(error) {
+              console.error(error);
+            }).always(function(res){
+            });
+          }
+        } else {
+          alert('선택된 회원이 없습니다.')
+        }
+      }
+      function removeProduct() {
+        var checkedProduct = [];
+        $('.check_product').each(function(){
+          if($(this).is(':checked')) {
+            checkedProduct.push($(this).val());
+          }
+        })
+        removeProductAjax(checkedProduct);
+      }
+      $(document).ready(function(){
+        $('.is_use').on('change', function(e){
+          var isChecked = e.target.checked;
+          var id = $(this).data('id');
+          $.ajax({
+            type: 'post',
+            url: '/adm/product/detail/'+id+'/use',
+            data: {
+              use: isChecked
+            }
+          })
+        })
+        $('.is_sold_out').on('change', function(e){
+          var isChecked = e.target.checked;
+          var id = $(this).data('id');
+          $.ajax({
+            type: 'post',
+            url: '/adm/product/detail/'+id+'/soldout',
+            data: {
+              sold_out: isChecked
+            }
+          })
+        })
+        $("#products-datatable").DataTable({
+          language:{
+            paginate:{
+              previous:"<i class='mdi mdi-chevron-left'>",
+              next:"<i class='mdi mdi-chevron-right'>"
+            },
+            info:"전체 회원수 _START_ to _END_ of _TOTAL_",
+            lengthMenu:'Display <select class=\'custom-select custom-select-sm ml-1 mr-1\'><option value="10">10</option><option value="20">20</option><option value="-1">All</option></select> customers'
+          },
+          pageLength:10,
+          columns:[
+            {
+              orderable:!1,
+              render:function(e,o,l,t){
+                return"display"===o && (e='' +
+                  '<div class="custom-control custom-checkbox">' +
+                  '<input type="checkbox" class="custom-control-input dt-checkboxes check_product" value="'+l[1]+'">' +
+                  '<label class="custom-control-label">&nbsp;</label>' +
+                  '</div>'),e
+              },
+              checkboxes:{
+                selectRow:!0,
+                selectAllRender:'<div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input dt-checkboxes"><label class="custom-control-label">&nbsp;</label></div>'
+              }
+            },
+            {orderable:!0},
+            {orderable:!1},
+            {orderable:!0},
+            {orderable:!0},
+            {orderable:!0},
+            {orderable:!0},
+            {orderable:!0},
+            {orderable:!0},
+            {orderable:!0},
+            {orderable:!0},
+            {orderable:!0},
+            {orderable:!1}
+          ],
+          select: {style:"multi"},
+          order:  [[5,"asc"]],
+          drawCallback: function(){
+            $(".dataTables_paginate > .pagination").addClass("pagination-rounded")}
+        });
+      });
+    </script>
+{% endblock %}

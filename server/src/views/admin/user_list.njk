@@ -1,0 +1,243 @@
+{% extends './layout/base.njk' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <h4 class="page-title">회원관리</h4>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <a href="/adm/users/create" class="btn btn-primary mb-2"><i class="mdi mdi-plus-circle mr-2"></i> 회원 등록하기</a>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="text-sm-right">
+                                <button type="button" class="btn btn-success mb-2 mr-1"><i class="mdi mdi-settings"></i></button>
+{#                                    <button type="button" class="btn btn-light mb-2 mr-1">Import</button>#}
+{#                                    <button type="button" class="btn btn-light mb-2">Export</button>#}
+                            </div>
+                        </div><!-- end col-->
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-centered table-striped dt-responsive nowrap w-100" id="products-datatable">
+                            <thead>
+                            <tr>
+                                <th style="width: 20px;">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="customCheck1" d>
+                                        <label class="custom-control-label" for="customCheck1">&nbsp;</label>
+                                    </div>
+                                </th>
+                                <th>id</th>
+                                <th>이름</th>
+                                <th>권한</th>
+                                <th>이메일</th>
+                                <th>연락처</th>
+                                <th>관리자 인증</th>
+                                <th>사업자명</th>
+                                <th>사업자번호</th>
+                                <th>가입일</th>
+                                <th style="width: 75px;">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for user in users %}
+                                <tr>
+                                    <td>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="customCheck13">
+                                            <label class="custom-control-label" for="customCheck13">&nbsp;</label>
+                                        </div>
+                                    </td>
+                                    <td>{{ user.id }}</td>
+                                    <td class="table-user">
+                                        <a href="/adm/user/{{ user.id }}" class="text-body font-weight-semibold">
+                                            {% if user.thumbnail %}
+                                                <img src="{{ user.thumbnail }}" alt="table-user" class="mr-1 rounded-circle">
+                                            {% endif %}
+                                            {{ user.name }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {% if user.role === 'admin' %}
+                                            <span class="badge badge-primary">{{ user.role }}</span>
+                                        {% elseif user.role === 'manager' %}
+                                            <span class="badge badge-success">{{ user.role }}</span>
+                                        {% else %}
+                                            <span class="badge badge-light">{{ user.role }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ user.email }}
+                                    </td>
+                                    <td>
+                                        {{ user.number }}
+                                    </td>
+                                    <td>
+                                        {% if user.name != '최고관리자' or user.id != '1' %}
+                                            <span hidden>{{ user.verified }}</span>
+                                            <div class="custom-checkbox mt-1">
+                                                <input type="checkbox" class="is_verified" id="is_verified-{{ user.id }}" name="is_verified" data-id="{{ user.id }}" {% if user.verified %} checked {% endif %} data-switch="primary"/>
+                                                <label for="is_verified-{{ user.id }}" data-on-label="On" data-off-label="Off"></label>
+                                            </div>
+                                        {% endif %}
+
+                                    </td>
+                                    <td>
+                                        {{ user.companyName }}
+                                    </td>
+                                    <td>
+                                        {{ user.companyCode }}
+                                    </td>
+                                    <td>
+                                        {{ user.createdAt | date("YYYY-MM-DD HH:mm:ss")   }}
+                                    </td>
+
+                                    <td>
+                                        <a href="/adm/user/{{ user.id }}" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
+                                        {% if user.name != '최고관리자' or user.id != '1' %}
+                                            <a href="javascript:removeUserAjax({{ user.id }})" class="action-icon"> <i class="mdi mdi-delete"></i></a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <button class="btn btn-danger mb-2" onclick="return removeUser()">선택 삭제</button>
+                        </div>
+                    </div>
+                </div> <!-- end card-body-->
+            </div> <!-- end card-->
+        </div> <!-- end col -->
+    </div>
+    <!-- end row -->
+
+</div> <!-- container -->
+{% endblock %}
+
+{% block script %}
+<script>
+  function removeUserAjax(checkedUser) {
+    if(checkedUser.length > 0 || typeof(checkedUser) === 'number') {
+        if(confirm('정말 삭제하시겠습니까?')) {
+          $.ajaxSettings.traditional = true;
+          $.ajax({
+              url: '/adm/users/delete',
+              type: 'post',
+              data: {
+              checkedUser: checkedUser
+            },
+            }).done(function(data){
+              if(data.success === true) {
+              var checkedUser = data.removedUsers;
+              if (typeof checkedUser === "string") {
+              $('.check_user').each(function(){
+              if( $(this).val() === checkedUser ) {
+              $(this).parents('tr').remove();
+            }
+            })
+            } else {
+              for ( var userId of checkedUser ) {
+              $('.check_user').each(function(){
+              if( $(this).val() === userId ) {
+              $(this).parents('tr').remove();
+            }
+            })
+            }
+            }
+            } else {
+              alert('회원 삭제 실패');
+            }
+            }).fail(function(error) {
+              console.error(error);
+            }).always(function(res){
+            });
+        }
+    } else {
+      alert('선택된 회원이 없습니다.')
+    }
+  }
+  function removeUser() {
+    var checkedUser = [];
+    $('.check_user').each(function(){
+      if($(this).is(':checked')) {
+        checkedUser.push($(this).val());
+      }
+    })
+    removeUserAjax(checkedUser);
+  }
+  $(document).ready(function(){
+    $('.is_verified').on('change', function(e){
+      var isChecked = e.target.checked;
+      var id = $(this).data('id');
+      $.ajax({
+        type: 'post',
+        url: '/adm/user/'+id,
+        data: {
+          verified: isChecked
+        }
+      })
+    })
+      $("#products-datatable").DataTable({
+          language:{
+            paginate:{
+              previous:"<i class='mdi mdi-chevron-left'>",
+              next:"<i class='mdi mdi-chevron-right'>"
+            },
+            info:"전체 회원수 _START_ to _END_ of _TOTAL_",
+            lengthMenu:'Display <select class=\'custom-select custom-select-sm ml-1 mr-1\'><option value="10">10</option><option value="20">20</option><option value="-1">All</option></select> customers'
+          },
+          pageLength:10,
+          columns:[
+            {
+              orderable:!1,
+              render:function(e,o,l,t){
+                if( l[6] === '최고관리자' ) {
+                  return"display"===o && (e='' +
+                    '<div class="custom-control custom-checkbox">' +
+                    '<input type="checkbox" class="custom-control-input dt-checkboxes check_user" value="'+l[1]+'" disabled="disabled">' +
+                    '<label class="custom-control-label">&nbsp;</label>' +
+                    '</div>'),e
+                }
+                return"display"===o && (e='' +
+                  '<div class="custom-control custom-checkbox">' +
+                  '<input type="checkbox" class="custom-control-input dt-checkboxes check_user" value="'+l[1]+'">' +
+                  '<label class="custom-control-label">&nbsp;</label>' +
+                  '</div>'),e
+              },
+              checkboxes:{
+                selectRow:!0,
+                selectAllRender:'<div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input dt-checkboxes"><label class="custom-control-label">&nbsp;</label></div>'
+              }
+            },
+            {orderable:!0},
+            {orderable:!0},
+            {orderable:!0},
+            {orderable:!0},
+            {orderable:!0},
+            {orderable:!0},
+            {orderable:!0},
+            {orderable:!0},
+            {orderable:!0},
+            {orderable:!1}
+          ],
+          select: {style:"multi"},
+          order:  [[9,"desc"]],
+          drawCallback: function(){
+            $(".dataTables_paginate > .pagination").addClass("pagination-rounded")}
+        });
+  });
+</script>
+{% endblock %}

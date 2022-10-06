@@ -1,0 +1,322 @@
+{% extends './layout/base.njk' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-flex align-items-center">
+                <h4 class="page-title">상품 등록</h4>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <form action="" method="POST" id="form" enctype="multipart/form-data">
+                    <div class="card-body">
+                        <div class="row" id="optionArea">
+                            <div class="col-12">
+                                <div class="d-flex align-items-center">
+                                    <label for="">상품 옵션관리</label>
+                                    {%  if not option.id %}
+                                    <button type="button" class="btn btn-primary addOptionItem" style="margin-left: auto;">상품옵션 추가</button>
+                                    {% endif %}
+                                </div>
+                                <div class="card optionItem" id="optionItem{{ option.id }}">
+                                            <input type="hidden" name="optionItemId" value="{{ option.id }}">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-2">
+                                                        <div class="form-group">
+                                                            <label for="billing-email-address">옵션제목</label>
+                                                            <input class="form-control" type="text" placeholder="상품 소개글" name="option_name" value="{{ option.name }}">
+                                                            <span class="font-13 text-muted">ex) 컬러, 사이즈 등</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-10">
+                                                        <label for="">옵션별 상세(오름차순 정렬)</label>
+                                                        <div class="optionListDetail">
+                                                            {% for option in option.list %}
+                                                                <div class="row row-{{ loop.index }}" >
+{#                                                                    <div class="col-1">#}
+{#                                                                        <div class="custom-control custom-checkbox">#}
+{#                                                                            <input type="checkbox" class="custom-control-input" name="option_sold_out" id="option_sold_out{{ option.id }}"  {% if not option.sold_out == 'off' %} checked {% endif %}>#}
+{#                                                                            <label class="custom-control-label" for="option_sold_out{{ option.id }}"> 품절</label>#}
+{#                                                                        </div>#}
+{#                                                                    </div>#}
+                                                                    <div class="col-1">
+                                                                        <div class="form-group">
+                                                                            <input class="form-control" type="text" placeholder="순서" name="option_order" value="{{ option.order }}">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-3">
+                                                                        <div class="form-group">
+                                                                            <input class="form-control" type="text" placeholder="옵션명" name="option_name" value="{{ option.name }}">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-3">
+                                                                        <div class="form-group">
+                                                                            <div class="input-group">
+                                                                                <div class="custom-file">
+                                                                                    <input type="file" class="custom-file-input option_thumbnail" name="option_thumbnail">
+                                                                                    <input type="hidden" name="option_thumbnail_path" value="{{ option.path }}">
+                                                                                    <label class="custom-file-label" for="option_thumbnail">{{ option.path }}</label>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-3">
+                                                                        <div class="form-group">
+                                                                            <input class="form-control" type="text" placeholder="가격" name="option_price" value="{{ option.price }}">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-2">
+                                                                        <button type="button" class="btn btn-outline-danger btn-row-remove" data-rowid="{{ loop.index }}">삭제</button>
+                                                                    </div>
+                                                                </div>
+                                                            {% endfor %}
+                                                        </div>
+                                                        <button type="button" class="btn btn-primary addOptionDetailRow" style="margin-left: auto;">옵션별 상세 추가</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                            </div>
+                        </div>
+                        <div class="mt-3 d-flex">
+                            <a href="/adm/options" class="btn btn-secondary">뒤로가기</a>
+                            <div class="ml-auto ">
+                                {% if option.id %}
+                                    <button type="button" id="delete" class="btn btn-danger mr-1">삭제</button>
+                                {% endif %}
+                                <button type="submit" class="btn btn-primary">저장</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+
+    {% block css %}
+        <link href="/static/admin/css/vendor/summernote-bs4.css" rel="stylesheet" type="text/css" />
+    {% endblock %}
+
+    {% block script %}
+        <script src="/static/admin/js/vendor/summernote-bs4.min.js"></script>
+        <script src="/static/admin/js/vendor/summernote-ko-KR.min.js"></script>
+        <script>
+          var filesTempArr = [];
+          $(function(){
+            $(document).on('change', '.option_thumbnail', function(e){
+              fileUploadForGetPath(e.target.files[0], this);
+            });
+            $('#delete').on('click', function(){
+              if(confirm('삭제 하시겠습니까?')) {
+                $.ajax({
+                  url: '/adm/options/remove/{{ option.id }}',
+                  type: 'post',
+                }).done(function(res) {
+                  if(res.success) {
+                    alert('삭제 되었습니다.')
+                    location.href = '/adm/options'
+                  }
+                }).fail(function(err){
+                  console.log(err);
+                })
+              }
+            });
+
+            $('#form').submit(function(e){
+              e.preventDefault();
+              var optionsArr = [];
+              $('.optionItem').each(function(){
+                var optionObj = {};
+                optionObj.id = $(this).find('[name="optionItemId"]').val();
+                optionObj.name = $(this).find('[name="option_name"]').val();
+                optionObj.list = [];
+                $(this).find('.optionListDetail .row').each(function(){
+                  var optionDetailObj = {};
+                  optionDetailObj.id = $(this).find('[name="option_id"]').val();
+                  optionDetailObj.name = $(this).find('[name="option_name"]').val();
+                  optionDetailObj.path = $(this).find('[name="option_thumbnail_path"]').val();
+                  optionDetailObj.price = $(this).find('[name="option_price"]').val();
+                  optionDetailObj.sold_out = $(this).find('[name="option_sold_out"]').is(':checked') ? 'on' : 'off';
+                  optionDetailObj.order = $(this).find('[name="option_order"]').val();
+                  optionObj.list.push(optionDetailObj);
+                })
+                optionsArr.push(optionObj);
+              });
+
+              var url = '{{ option.name }}' === '' ? '/adm/options/create' : '/adm/options/detail/{{ option.id }}';
+              $.ajax({
+                url: url,
+                type: 'post',
+                data: {
+                  data: JSON.stringify(optionsArr)
+                },
+              }).done(function(data){
+                if(data.success) {
+                  alert('등록이 완료되었습니다.');
+
+                  // location.href="/adm/options";
+                }
+              }).fail(function(error) {
+                console.error(error);
+              })
+            });
+
+            $(document).on('click', '.addOptionDetailRow', function(){
+              $(this).parents('.optionItem').find('.optionListDetail').append('' +
+                '<div class="row">\n' +
+                '\n' +
+                '                                                                    <div class="col-1">\n' +
+                '                                                                        <div class="form-group">\n' +
+                '                                                                            <input class="form-control" type="text" placeholder="순서" name="option_order">\n' +
+                '                                                                        </div>\n' +
+                '                                                                    </div>' +
+                '                                                            <div class="col-4">\n' +
+                '                                                                <div class="form-group">\n' +
+                '                                                                    <input class="form-control" type="text" placeholder="옵션명" name="option_name">\n' +
+                '                                                                </div>\n' +
+                '                                                            </div>\n' +
+                '                                                            <div class="col-3">\n' +
+                '                                                                <div class="form-group">\n' +
+                '                                                                    <div class="input-group">\n' +
+                '                                                                        <div class="custom-file">\n' +
+                '                                                                            <input type="file" class="custom-file-input option_thumbnail" name="option_thumbnail">\n' +
+                '                                                                            <input type="hidden" name="option_thumbnail_path" value="">\n' +
+                '                                                                            <label class="custom-file-label" for="option_thumbnail">상품 이미지</label>\n' +
+                '                                                                        </div>\n' +
+                '                                                                    </div>\n' +
+                '                                                                </div>\n' +
+                '                                                            </div>\n' +
+                '                                                            <div class="col-3">\n' +
+                '                                                                <div class="form-group">\n' +
+                '                                                                    <input class="form-control" type="text" placeholder="가격" name="option_price">\n' +
+                '                                                                </div>\n' +
+                '                                                            </div>\n' +
+                '                                                        </div>');
+            })
+
+            $('.addOptionItem').on('click', function(){
+              $('#optionList').append('\n' +
+                '                                    <div class="card optionItem">\n' +
+                '                                        <div class="card-body">\n' +
+                '                                            <div class="row">\n' +
+                '                                                <div class="col-3">\n' +
+                '                                                    <div class="form-group">\n' +
+                '                                                        <label for="billing-email-address">옵션제목</label>\n' +
+                '                                                        <input class="form-control" type="text" placeholder="상품 소개글" name="option_name">\n' +
+                '                                                        <span class="font-13 text-muted">ex) 컬러, 사이즈 등</span>\n' +
+                '                                                    </div>\n' +
+                '                                                </div>\n' +
+                '                                                <div class="col-9">\n' +
+                '                                                    <label for="">옵션별 상세</label>\n' +
+                '                                                    <div class="optionListDetail">\n' +
+                '                                                        <div class="row">\n' +
+                '                                                                    <div class="col-1">\n' +
+                '                                                                        <div class="form-group">\n' +
+                '                                                                            <input class="form-control" type="text" placeholder="순서" name="option_order">\n' +
+                '                                                                        </div>\n' +
+                '                                                                    </div>' +
+                '                                                            <div class="col-4">\n' +
+                '                                                                <div class="form-group">\n' +
+                '                                                                    <input class="form-control" type="text" placeholder="옵션명" name="option_name">\n' +
+                '                                                                </div>\n' +
+                '                                                            </div>\n' +
+                '                                                            <div class="col-3">\n' +
+                '                                                                <div class="form-group">\n' +
+                '                                                                    <div class="input-group">\n' +
+                '                                                                        <div class="custom-file">\n' +
+                '                                                                            <input type="file" class="custom-file-input option_thumbnail" name="option_thumbnail">\n' +
+                '                                                                            <input type="hidden" name="option_thumbnail_path" value="">\n' +
+                '                                                                            <label class="custom-file-label" for="option_thumbnail">상품 이미지</label>\n' +
+                '                                                                        </div>\n' +
+                '                                                                    </div>\n' +
+                '                                                                </div>\n' +
+                '                                                            </div>\n' +
+                '                                                            <div class="col-3">\n' +
+                '                                                                <div class="form-group">\n' +
+                '                                                                    <input class="form-control" type="text" placeholder="가격" name="option_price">\n' +
+                '                                                                </div>\n' +
+                '                                                            </div>\n' +
+                '                                                        </div>\n' +
+                '                                                    </div>\n' +
+                '                                                    <button type="button" class="btn btn-primary addOptionDetailRow" style="margin-left: auto;">옵션별 상세 추가</button>\n' +
+                '                                                </div>\n' +
+                '                                            </div>\n' +
+                '                                        </div>\n' +
+                '                                    </div>')
+            });
+          })
+
+          $(document).ready(function() {
+            $("#thumbnail").on("change", addFiles);
+          });
+
+          function addFiles(e) {
+            var files = e.target.files;
+            var filesArr = Array.prototype.slice.call(files);
+            var filesArrLen = filesArr.length;
+            var filesTempArrLen = filesTempArr.length;
+            for( var i=0; i<filesArrLen; i++ ) {
+              filesTempArr.push(filesArr[i]);
+            }
+          }
+
+          function deleteFile (id, idx) {
+            var imgLen = $('#fileList .media div').length;
+            if(imgLen === 1) {
+              alert('최소 하나 이상의 상품이미지가 필요합니다.');
+              return false;
+            }
+            if( !confirm('이미지를 삭제 하시겠습니까?') ) {
+              return false;
+            }
+            $.ajax({
+              url: '/adm/product/image/delete/' + id,
+              type: 'post',
+              contentType: false,
+              processData: false,
+            }).done(function(data){
+              if(data.success) {
+                alert('이미지가 삭제되었습니다.');
+                $('#fileList .media div').eq(idx).remove();
+                location.reload();
+              }
+            }).fail(function(error) {
+              console.error(error);
+            });
+          }
+
+          function deleteOption(id) {
+            if( !confirm('옵션을 삭제 하시겠습니까?') ) {
+              return false;
+            }
+            $.ajax({
+              url: '/adm/product/option/delete/' + id,
+              type: 'post',
+              contentType: false,
+              processData: false,
+            }).done(function(data){
+              if(data.success) {
+                alert('옵션이 삭제되었습니다.');
+                $('#optionItem' + id).remove();
+              }
+            }).fail(function(error) {
+              console.error(error);
+            });
+          }
+
+
+          $(function(){
+            $('.btn-row-remove').on('click', function(){
+              var id = $(this).data('rowid');
+              $(this).parents('.row.row-' + id).remove()
+            })
+          })
+
+        </script>
+    {% endblock %}

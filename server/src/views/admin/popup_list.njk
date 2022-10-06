@@ -1,0 +1,113 @@
+{% extends './layout/base.njk' %}
+
+{% block content %}
+
+    <!-- Start Content-->
+    <div class="container-fluid">
+
+        <!-- start page title -->
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box">
+                    <h4 class="page-title">팝업 관리</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-sm-12">
+                                <a href="/adm/popup/create" class="btn btn-primary mb-2"><i class="mdi mdi-plus-circle mr-2"></i>추가하기</a>
+                            </div>
+                        </div>
+                        <table id="basic-datatable" class="table dt-responsive nowrap w-100">
+                            <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>제목</th>
+                                <th>시작일</th>
+                                <th>종료일</th>
+                                <th>노출 여부</th>
+                                <th>링크</th>
+                                <th>생성일</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for object in objects %}
+                            <tr>
+                                <td>{{ object.id }}</td>
+                                <td>
+                                    <a href="/adm/popup/detail/{{ object.id }}" class="text-body font-weight-semibold">
+                                        {{ object.title }}
+                                    </a>
+                                </td>
+                                <td>
+                                    {{ object.start_date | date("YYYY-MM-DD HH:mm:ss")   }}
+                                </td>
+                                <td>
+                                    {{ object.end_date | date("YYYY-MM-DD HH:mm:ss")   }}
+                                </td>
+                                <td>
+                                    <input type="checkbox" id="is_active" name="is_active"  {% if object.is_active %} checked {% endif %} data-switch="primary" disabled/>
+                                    <label for="is_active" data-on-label="On" data-off-label="Off" style="margin: 0;"></label>
+                                </td>
+                                <td>
+                                    <a href="{{ object.link }}" target="_blank">링크</a>
+                                </td>
+                                <td>
+                                    {{ object.createdAt | date("YYYY-MM-DD HH:mm:ss") }}
+                                </td>
+                                <td>
+                                    <a href="/adm/popup/detail/{{ object.id }}" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
+                                    <a href="javascript:removePopup({{ object.id }})" id="delete" class="action-icon"> <i class="mdi mdi-delete"></i></a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script src="/static/admin/js/vendor/dropzone.min.js"></script>
+<script src="/static/admin/js/ui/component.fileupload.js"></script>
+<script>
+  function removePopup(id) {
+    if(confirm('삭제 하시겠습니까?')) {
+      $.ajax({
+        url: '/adm/popup/remove/' + id,
+        type: 'post',
+      }).done(function(res) {
+        if(res.success) {
+          alert('삭제 되었습니다.')
+          location.href = '{{ routes.adminPopup }}'
+        }
+      })
+    }
+  };
+
+  $(document).ready(function(){
+    $("#basic-datatable").DataTable({
+      pageLength:10,
+      columns:[
+        { orderable: 1 },
+        { orderable: 1 },
+        { orderable: 1 },
+        { orderable: 1 },
+        { orderable: 1 },
+        { orderable: !1 },
+        { orderable: 1 },
+        { orderable: !1 },
+      ]
+    });
+  });
+</script>
+{% endblock %}

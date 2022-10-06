@@ -1,0 +1,113 @@
+{% extends 'layout/base.njk' %}
+
+{% block content %}
+    {% include 'layout/header.njk' %}
+<div class="container">
+    <div class="board">
+        <div class="wrap">
+            <h1 class="board__title">1:1문의</h1>
+
+            <div class="board__table2">
+                <table>
+                    <colgroup>
+                        <col width="120">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th>번호</th>
+                        <td>{{ object.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>제목</th>
+                        <td>
+                            {{ object.title }}
+                            {% if object.is_secret %}
+                                <span class="text-blue-300 text-sm">비밀글</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>내용</th>
+                        <td>{{ object.content }}</td>
+                    </tr>
+                    <tr>
+                        <th>작성일</th>
+                        <td>{{ object.createdAt | date("YYYY-MM-DD") }}</td>
+                    </tr>
+                    <tr>
+                        <th>작성자</th>
+                        <td>{{ object.User.name }}</td>
+                    </tr>
+                    <tr style="display: none;">
+                        <th>수신여부</th>
+                        <td>
+                            <div class="flex">
+                                <div class="custom-control custom-checkbox mr-2">
+                                    <input type="checkbox" class="custom-control-input" id="receive_email" {% if object.receive_email %} checked {% endif %} disabled>
+                                    <label class="custom-control-label" for="receive_email">이메일</label>
+                                </div>
+
+                                <div class="custom-control custom-checkbox mr-2">
+                                    <input type="checkbox" class="custom-control-input" id="receive_sms" {% if object.receive_sms %} checked {% endif %} disabled>
+                                    <label class="custom-control-label" for="receive_sms">SMS</label>
+                                </div>
+
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="receive_talk" {% if object.receive_talk %} checked {% endif %} disabled>
+                                    <label class="custom-control-label" for="receive_talk">카카오</label>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <hr class="my-4">
+
+            {% if object.reply_content %}
+            <div class="board__table2">
+                <table class="">
+                    <colgroup>
+                        <col width="120">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th>내용</th>
+                        <td>{{ object.reply_content | safe }}</td>
+                    </tr>
+                    <tr>
+                        <th>작성일</th>
+                        <td>{{ object.reply_datetime | date("YYYY-MM-DD") }}</td>
+                    </tr>
+                    <tr>
+                        <th>작성자</th>
+                        <td>{{ answer.name }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+                <p class="text-center py-20 mx-auto">최대한 빨리 답변 드리도록 하겠습니다. 감사합니다.</p>
+            {% endif %}
+
+            <div class="board__btnbox">
+                <a href="/qna" class="button mr-1">목록</a>
+                {% if object.User.id === loginUser.id %}
+                    <a href="/qna/update/{{ object.id }}" class="button mr-1">수정</a>
+                    <form action="/qna/remove/{{ object.id }}" method="POST">
+                        <button type="submit" onclick="return confirm('삭제 하시겠습니까?')" class="button" style="background: #f56565;">삭제</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+
+
+    </div>
+
+
+</div>
+{% include 'layout/footer.njk' %}
+{% endblock %}
+

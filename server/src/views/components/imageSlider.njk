@@ -1,0 +1,23 @@
+<style>
+    .mobileclose {
+        display: none;
+    }
+    @media screen and (max-width: 768px) {
+        .mobileclose {
+            display: block;width: 100%;height: 40px;text-align: center;color:#fff;background:#222;margin-top: 20px;
+        }
+    }
+</style>
+<div class="imageSlider" id="imageSlider" style="display: none;">
+    <div class="imageSlider__content">
+        <button class="close" onclick="$('#imageSlider').hide();">닫기</button>
+        <div class="slider-for">
+        </div>
+        <div class="slider-nav">
+            <div class="slick-arrow prev-arrow"></div>
+            <div class="slick-arrow next-arrow"></div>
+            <div class="slider"></div>
+        </div>
+        <button class="mobileclose" onclick="$('#imageSlider').hide();">닫기</button>
+    </div>
+</div>

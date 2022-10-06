@@ -1,0 +1,192 @@
+{% extends 'layout/base.njk' %}
+
+{% block content %}
+
+    {% include 'layout/header.njk' %}
+
+    <div class="container">
+        <div class="board">
+            <div class="wrap">
+                <h1 class="board__title">주문 상세 내역</h1>
+
+                <div class="board__table2">
+                    <table>
+                        <colgroup>
+                            <col width="120">
+                            <col>
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                            <th>주문번호</th>
+                            <td>{{ object.id }}</td>
+                        </tr>
+                        <tr>
+                            <th>주문 일시</th>
+                            <td>{{ object.createdAt | date("YYYY-MM-DD") }}</td>
+                        </tr>
+                        <tr>
+                            <th>성함</th>
+                            <td>{{ object.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>연락처</th>
+                            <td>{{ object.number }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if object.Payment %}
+                <hr class="mt-4 mb-8 ">
+                <h1 class="board__title">결제 내역</h1>
+                <div class="board__table2">
+                    <table>
+                        <colgroup>
+                            <col width="120">
+                            <col>
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                            <th>결제상태</th>
+                            <td>
+                                {% if object.Payment.status == 'ready' %}
+                                    <span style="color:#f00">결제 전</span>
+                                {% else %}
+                                    <span style="color:#00f">결제 완료</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>고객주문번호</th>
+                            <td>BEAKSAN_{{ object.Payment.merchant_uid }}</td>
+                        </tr>
+                        <tr>
+                            <th>결제 방법</th>
+                            <td>
+                                {% if object.Payment.pay_method == 'phone' %}
+                                    휴대폰
+                                {% elseif object.Payment.pay_method == 'card' %}
+                                    신용카드
+                                {% elseif object.Payment.pay_method == 'vbank' %}
+                                    가상계좌
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if object.Payment.pay_method == 'vbank' %}
+                            <tr>
+                                <th>가상 계좌 은행명</th>
+                                <td>{{ object.Payment.vbank_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>가상 계좌 번호</th>
+                                <td>{{ object.Payment.vbank_num }}</td>
+                            </tr>
+                            <tr>
+                                <th>가상 계좌 입금 제한 시간</th>
+                                <td>{{ vbankDate | date("YYYY-MM-DD HH:mm:ss") }}</td>
+                            </tr>
+                        {% endif %}
+                        <tr>
+                            <th>결제 금액</th>
+                            <td>{{ object.Payment.paid_amount | comma }} 원</td>
+                        </tr>
+                        <tr>
+                            <th>매출전표 확인</th>
+                            <td>
+                                <a href="{{ object.Payment.receipt_url }}" target="_blank" style="color:#00f;">바로가기</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+
+
+                <hr class="mt-4 mb-8 ">
+                <h1 class="board__title">주문 상품</h1>
+                {% for cart in object.Carts %}
+                    {% set objectTotalPrice = 0 %}
+                    <div class="board__table2 mb-1">
+                        <table>
+                            <colgroup>
+                                <col width="120">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                            <tr>
+                                <th>상품명</th>
+                                <td>{{ cart.Product.name }}</td>
+                            </tr>
+{#                            <tr>#}
+{#                                <th>상품명</th>#}
+{#                                <td>#}
+{#                                    {% if cart.is_payment == '1' %}#}
+{#                                        <span style="color:#00f">바로결제 상품</span>#}
+{#                                    {% else %}#}
+{#                                        <span style="color:#f00">나중결제 상품</span>#}
+{#                                    {% endif %}#}
+{#                                </td>#}
+{#                            </tr>#}
+                            <tr>
+                                <th>단가</th>
+                                <td>
+                                    {{ ((cart.Product.customer_price))|comma }} 원
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>옵션</th>
+                                <td>
+                                    {% for option in cart.options %}
+                                        <input type="hidden" class="optionsbox-item" value="{{ optiokn.selectedOption.price }}">
+                                        <p>
+                                            - {{ option.option.name }}:{{ option.selectedOption.name }} (+ {{ option.selectedOption.price }})
+                                        </p>
+
+                                        {% set objectTotalPrice = objectTotalPrice + option.selectedOption.price %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>수량</th>
+                                <td>{{ cart.quantity }} 개</td>
+                            </tr>
+                            <tr>
+                                <th>가격</th>
+                                <td>
+                                    {{ ((objectTotalPrice + cart.Product.customer_price) * cart.quantity)|comma }} 원
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                {% endfor %}
+
+                <div class="board__btnbox">
+                    <a href="/order" class="button mr-1">목록</a>
+                    <a href="/qna/create" class="button mr-1">1:1 문의하기</a>
+                    <form action="" method="post" id="form">
+                        <style>
+                            .button[disabled] {opacity: .1}
+                        </style>
+                        <button {% if object.is_cancel %} disabled {% endif%} class="button mr-1" id="submitForm" type="button" style="background:#f00">
+                            예약 취소 신청 {% if object.is_cancel %}  완료 {% endif%}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include 'layout/footer.njk' %}
+{% endblock %}
+{% block script %}
+    <script>
+      $(function(){
+        $('#submitForm').on('click', function(e){
+          if(confirm('예약을 취소하시겠습니까?')) {
+            $('#form').submit();
+          }
+        })
+      })
+    </script>
+{% endblock %}
+

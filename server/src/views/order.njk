@@ -1,0 +1,65 @@
+{% extends 'layout/base.njk' %}
+
+{% block content %}
+{% include 'layout/header.njk' %}
+
+<div class="container">
+    <div class="board">
+        <div class="wrap">
+            <h1 class="board__title">주문내역</h1>
+            {% if objects | length %}
+                {{ message }}
+                <div class="board__table">
+                    <table>
+                        <colgroup>
+                            <col width="50">
+                            <col>
+                            <col width="100">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>번호</th>
+                            <th>주문 상품</th>
+                            <th>주문일시</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if objects|length %}
+                        {% for object in objects %}
+                            <tr>
+                                <td>{{ object.id }}</td>
+                                <td>
+                                    <a href="/order/detail/{{ object.id }}">
+                                        {{ object.Carts[0].Product.name }} 등
+                                    </a>
+                                </td>
+                                <td>{{ object.createdAt | date("MM.DD") }}</td>
+                            </tr>
+                        {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="3">
+                                    <p class="text-center">등록된 주문내역이 없습니다.</p>
+                                </td>
+                            </tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-center py-20 mx-auto">주문내역이 없습니다.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% include 'layout/footer.njk' %}
+{% endblock %}
+
+{% block script %}
+    <script>
+      $(function(){
+      })
+    </script>
+{% endblock %}
+

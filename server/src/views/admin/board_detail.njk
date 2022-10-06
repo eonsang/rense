@@ -1,0 +1,136 @@
+{% extends './layout/base.njk' %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box">
+                    <h4 class="page-title">게시글 작성</h4>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        <form action="" method="POST" enctype="multipart/form-data" id="form">
+                            <input type="hidden" name="id" id="objectId" value="{{ object.id }}">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <input class="form-control" type="text" placeholder="제목" id="subject" name="subject" value="{{ object.subject }}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <div id="" class="textEditor"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="d-flex">
+                                        <a href="/adm/board/{{ boardName }}" class="btn btn-secondary">뒤로가기</a>
+                                        <button type="button" id="delete" class="btn btn-danger ml-auto mr-1">삭제</button>
+                                        <button type="submit" class="btn btn-primary">저장</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block css %}
+    <link href="/static/admin/css/vendor/summernote-bs4.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block script %}
+    <script src="/static/admin/js/vendor/summernote-bs4.min.js"></script>
+    <script src="/static/admin/js/vendor/summernote-ko-KR.min.js"></script>
+
+    <script>
+      $(function(){
+        $(".textEditor").summernote({
+          lang: 'ko-KR',
+          placeholder: "",
+          height: 300,
+          callbacks: {
+            onImageUpload: function(files) {
+              console.log(files);
+              for (var i = 0; i <= files.length - 1; i++) {
+                singleUpload(files[i], this);
+              }
+            }
+          }
+        });
+        $('.textEditor').eq(0).summernote('code', `{{ object.content | safe }}`)
+
+        $('#delete').on('click', function(){
+          if(confirm('삭제 하시겠습니까?')) {
+            $.ajax({
+              url: '/adm/board/{{ boardName }}/delete/{{ object.id }}',
+              type: 'post',
+            }).done(function(res) {
+              if(res.success) {
+                alert('삭제 되었습니다.')
+                location.href = '/adm/board/{{ boardName }}'
+              }
+            }).fail(function(err){
+              console.log(err);
+            })
+          }
+        });
+
+        $('#form').submit(function(e){
+          e.preventDefault();
+
+          var content = $('.textEditor').eq(0).summernote('code');
+
+          var formData = new FormData();
+          formData.append('subject', subject.value);
+          formData.append('content', content);
+          if( $('#objectId').val() ) {
+            $.ajax({
+              url: '/adm/board/{{ boardName }}/detail/{{ object.id }}',
+              type: 'post',
+              data: formData,
+              contentType: false,
+              processData: false,
+            }).done(function(data){
+              if(data.success === true) {
+                alert('게시글이 수정 되었습니다.');
+                location.reload();
+              } else {
+                alert('게시글 수정 실패');
+              }
+            }).fail(function(error) {
+              console.error(error);
+            })
+          } else {
+            $.ajax({
+              url: '/adm/board/{{ boardName }}/create',
+              type: 'post',
+              data: formData,
+              contentType: false,
+              processData: false,
+            }).done(function(res){
+              if(res.success === true) {
+                alert('게시글이 입력 되었습니다.');
+                location.href='/adm/board/{{ boardName }}/detail/' + res.data.id
+              } else {
+                alert('홈페이지 기본정보 수정 실패');
+              }
+            }).fail(function(error) {
+              console.error(error);
+            })
+          }
+        });
+      })
+    </script>
+{% endblock %}

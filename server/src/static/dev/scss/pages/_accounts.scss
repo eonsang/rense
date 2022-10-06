@@ -1,0 +1,39 @@
+.accounts {
+  @apply flex w-full items-center justify-center;
+  overflow: auto;
+  padding:2rem 0;
+  &.accounts--login {
+    @apply h-full
+  }
+
+  .accounts__logo {
+    @apply text-center;
+    img {
+      @apply mx-auto;
+      max-width: 50%;
+    }
+  }
+  .wrap {
+    max-width: 480px;
+    margin:0 auto;
+  }
+
+  .form {
+    margin-top: 50px;
+  }
+
+  .form-row {
+    margin-bottom: 20px;
+  }
+
+  .accounts-etc {
+    @apply flex items-center justify-center mt-6;
+
+    a ~ a {
+      margin-left: 1em;
+      padding-left: 1em;
+      border-left: 1px solid #ccc;
+      line-height: 1em;
+    }
+  }
+}

@@ -1,0 +1,103 @@
+.form-row {
+
+  .input {
+    @apply flex-1;
+    input {
+      padding:0 1em;
+      background:#f3f3f4;
+      border-radius: 10px;
+      height: 45px;
+      width: 100%;
+      font-size: 14px;
+    }
+  }
+
+  .select {
+    @apply flex-1;
+    select {
+      padding:0 1em;
+      background:#f3f3f4 url('../../images/select-arrow.png') no-repeat calc(100% - 1em) center;
+      border-radius: 10px;
+      height: 45px;
+      width: 100%;
+      font-size: 14px;
+      appearance: none;
+    }
+  }
+
+  .textarea {
+    @apply flex-1;
+    textarea {
+      height: 300px;
+      padding:1em;
+      font-size: 1rem;
+      background:#f3f3f4;
+      border-radius: 10px;
+      width: 100%;
+    }
+  }
+
+  .form-label {
+    @apply text-gray-600 block;
+    margin-bottom: 5px;
+    padding-left: 1rem;
+  }
+}
+
+
+.form-btnbox {
+  margin-top: 30px;
+  @apply flex;
+  .submit {
+    @apply flex-1;
+    background:#FBD607;
+    color:#000;
+    line-height: 60px;
+    border-radius: 10px;
+  }
+  .cancel {
+    @apply bg-gray-500;
+    width: 120px;
+    flex: none;
+    color:#fff;
+    line-height: 60px;
+    border-radius: 10px;
+    text-align: center;
+  }
+}
+
+
+.checkbox {
+  @apply flex items-center;
+  cursor: pointer;
+  span {
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 1px solid #FBD607;
+    transition: all .3s;
+  }
+  input:checked + span {
+    background:#FBD607 url('../../images/icon-check.png') no-repeat center;
+    background-size: auto 1rem;
+  }
+}
+
+
+.form-info {
+  @apply text-sm text-gray-500 mt-1;
+}
+
+
+.complete-message {
+  h1 {
+    font-size: 1.5rem;
+  }
+  div {
+    @apply bg-gray-100;
+    padding: 1rem;
+    margin-top: 1em;
+  }
+  p {
+  }
+}

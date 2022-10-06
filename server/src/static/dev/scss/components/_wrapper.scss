@@ -1,0 +1,34 @@
+html, body {
+  height: 100%;
+  width: 100%;
+}
+.wrapper {
+  height: 100%;
+}
+
+.container {
+  padding:0 60px;
+  padding-top: 110px;
+  @media screen and (max-width: 1200px) {
+    padding:0 10px;
+    padding-top: 60px;
+  }
+}
+
+.footer {
+  @apply text-center py-12 border-t border-gray-200 mt-20;
+
+  img {
+    display: inline-block;
+  }
+  .footer__logo {
+    margin-bottom: .75rem;
+    img {
+      height: 40px;
+    }
+  }
+  p {
+    color:#909090;
+    font-weight: 100;
+  }
+}

@@ -1,0 +1,369 @@
+{% extends 'layout/base.njk' %}
+
+{% set count = 0 %}
+{% set totalPrice = 0 %}
+{% set paymentPrice = 0 %}
+{% block content %}
+    {% include 'layout/header.njk' %}
+    <div class="container">
+        <div class="cart">
+            <div class="cart__title">
+                장바구니({{ objects | length }})
+            </div>
+            <div class="cart__list">
+                <div class="cart__item cart__item--header">
+                    <div class="row">
+                        <div class="check">
+                            <label for="all" class="checkbox">
+                                <input type="checkbox" hidden id="all" checked>
+                                <span></span>
+                            </label>
+                        </div>
+                        <div class="thumb text-center">
+                            사진
+                        </div>
+                        <div class="info flex-1">
+                            상품명
+                        </div>
+                        <div class="price">
+                            단가
+                        </div>
+                        <div class="count">
+                            수량
+                        </div>
+                        <div class="total-price">
+                            금액
+                        </div>
+                        <div class="actions">
+
+                        </div>
+                    </div>
+                </div>
+                <style>
+                    .cart__item.soldout {opacity: .3;}
+                </style>
+                {% set allToTalItemPrice = 0 %}
+                {% if objects | length %}
+                    {% for object in objects %}
+                        {% set objectTotalPrice = 0 %}
+                        <div class="cart__item {% if object.ProductOptionDetail.sold_out %} soldout {% endif %}">
+                            <input type="checkbox" hidden class="is_paymentItem" {% if object.is_payment == '1' %} checked {% endif %}>
+                            <div class="row">
+                                <div class="check">
+                                    <label for="{{ object.id }}" class="checkbox">
+                                        <input type="checkbox" hidden id="{{ object.id }}" data-id="{{ object.id }}" {% if object.ProductOptionDetail.sold_out %} disabled {% else %} checked {% endif%} class="item-check">
+                                        <span></span>
+                                    </label>
+                                </div>
+                                <div class="thumb">
+                                    <img src="/{{ object.Product.ProductImages[0].path }}" alt="">
+                                </div>
+                                <div class="info flex-1">
+                                    <h3>
+                                        {{ object.Product.name }}
+                                    </h3>
+
+                                    <div class="optionsbox" style="margin-top: 10px;border-radius: 5px;border: 1px solid #eee;background:rgba(0,0,0,0.05);padding:.5em;">
+                                        <h4 style="font-size: 14px;">선택 옵션</h4>
+                                        {% for option in object.options %}
+                                            <input type="hidden" class="optionsbox-item" value="{{ optiokn.selectedOption.price }}">
+                                            <p>
+                                                - {{ option.option.name }}:{{ option.selectedOption.name }}
+{#                                                (+ {{ option.selectedOption.price }})#}
+                                            </p>
+
+                                            {% set objectTotalPrice = objectTotalPrice + option.selectedOption.price %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="price">
+                                    <label for="" class="label">단가</label>
+                                    <input type="hidden" class="price-value" value="{{ (object.Product.customer_price) }}">
+                                    <span id="price">{{ (object.Product.customer_price)|comma }}</span> 원
+                                    {% set objectTotalPrice = objectTotalPrice + object.Product.customer_price %}
+                                </div>
+                                <div class="count">
+                                    <div class="reglist__item">
+                                        <div class="form">
+                                            <button class="dec" data-cart-id="{{ object.id }}" {% if object.ProductOptionDetail.sold_out %} disabled {% endif%} >-</button>
+                                            <input type="text" value="{{ object.quantity }}" class="cnt" readonly>
+                                            <button class="inc" data-cart-id="{{ object.id }}" {% if object.ProductOptionDetail.sold_out %} disabled {% endif%} >+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="total-price">
+                                    <input type="hidden" class="total-price-value" value="{{ (objectTotalPrice * object.quantity) }}">
+
+                                    <span class="total-price-text">{{ (objectTotalPrice * object.quantity)|comma }}</span> 원
+                                    {% set allToTalItemPrice = allToTalItemPrice + (objectTotalPrice * object.quantity) %}
+                                </div>
+                                <div class="actions">
+                                    <button class="btn" data-id="{{ object.id }}">삭제</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% if not object.ProductOptionDetail.sold_out %}
+                            {% set count = count + object.quantity %}
+{#                           총 주문 금액 #}
+                            {% set totalPrice = totalPrice + ((object.Product.customer_price + object.ProductOptionDetail.price) * object.quantity) %}
+
+                            {% if object.is_payment == '1' %}
+                                {% set paymentPrice = paymentPrice + ((object.Product.customer_price + object.ProductOptionDetail.price) * object.quantity) %}
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p class="text-center py-20 mx-auto border-b border-gray-200">장바구니에 담긴 상품이 없습니다.</p>
+                {% endif %}
+            </div>
+
+            <p class="text-sm text-gray-500">※ 배송비: 3장 이상 구매 시 무료배송, 3장 미만은 착불</p>
+            <input type="hidden" id="result-total-price" value="{{ totalPrice }}">
+            <input type="hidden" id="result-paid-price" value="{{ paymentPrice }}">
+            <input type="hidden" id="result-balance-price" value="{{ totalPrice - paymentPrice }}">
+            <div class="cart__footer">
+                <div class="count">
+                    <label for="" class="label">총 수량</label>
+                    <p class="allCount value" id="allCount">{{ count }}</p>
+                </div>
+                <div class="calculator">
+                    <div class="row" style="justify-content: flex-start;">
+                        <div class="col">
+                            <label for="" class="label">총 주문금액</label>
+                            <p class="allPrice value" id="allPrice">￦ {{ allToTalItemPrice|comma }}</p>
+                        </div>
+{#                        <div class="col" style="margin-left: 5em;">#}
+{#                            <label for="" class="label">바로결제 금액</label>#}
+{#                            <p class="allPrice value" id="paymentPrice">￦ {{ paymentPrice|comma }}</p>#}
+{#                        </div>#}
+{#                        <div class="col" style="margin-left: 5em;">#}
+{#                            <label for="" class="label">나중결제 금액</label>#}
+{#                            <p class="allPrice value" id="next-paymentPrice">￦ {{ (totalPrice - paymentPrice)|comma }}</p>#}
+{#                        </div>#}
+                    </div>
+                </div>
+                <div class="btnbox">
+                    <button class="allremove" id="clear">전체 삭제</button>
+                    <button class="submit" onclick="$('#orderform').show();">예약하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include 'layout/footer.njk' %}
+    {% include 'components/orderform.njk' %}
+{% endblock %}
+{% block script %}
+    {#  iamport 스크립트 추가  #}
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js" ></script>
+    <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.5.js"></script>
+
+    <script>
+      function generateUID (length) {
+        return window.btoa(Array.from(window.crypto.getRandomValues(new Uint8Array(length * 2))).map((b) => String.fromCharCode(b)).join('')).replace(/[+/]/g, '').substring(0, length);
+      }
+
+      function submitOrder() {
+        // validation 체크
+
+        var formdata = new FormData();
+        formdata.append('name', $('#name').val());
+        formdata.append('number', $('#number').val());
+        formdata.append('zipcode', $('#zipcode').val());
+        formdata.append('addr1', $('#addr1').val());
+        formdata.append('addr2', $('#addr2').val());
+        formdata.append('addr3', $('#addr3').val());
+        formdata.append('total_price', $('#result-total-price').val());
+        formdata.append('paid_price', $('#result-paid-price').val());
+        formdata.append('balance_price', $('#result-balance-price').val());
+        var checkedItemId = [];
+        var titleProductName = '';
+        $('.cart__item:not(".cart__item--header")').each(function(idx, el) {
+
+          var isChecked = $(el).find('.item-check').is(':checked')
+          if(isChecked) {
+            checkedItemId.push($(el).find('.item-check').data('id'));
+            if(idx === 0) {
+              titleProductName = $(el).find('.item-check').parents('.cart__item').find('h3').text();
+            }
+          }
+        });
+        formdata.append('checkedItem', JSON.stringify(checkedItemId));
+        if(checkedItemId.length === 0) {
+          alert('최소 하나이상의 상품을 선택해주세요.')
+          return;
+        }
+        if(!$('#name').val()) {
+          alert('이름을 입력해주세요.');
+          return;
+        }
+        if(!$('#number').val()) {
+          alert('연락처를 입력해주세요.');
+          return;
+        }
+
+      $.ajax({
+        type: 'POST',
+        url: '/order',
+        data: formdata,
+        processData: false,
+        contentType: false,
+      }).done(function(res) {
+        if(res.success) {
+          alert('주문/예약이 완료되었습니다.\n방문일은 카카오톡 혹은 문자메세지를 통해 안내드리겠습니다.\n추가적인 문의사항은 1:1문의 혹은 전화를 통해 상담 바랍니다. 감사합니다.');
+          location.href='/order/detail/' + res.result.id;
+        }
+      });
+
+        // ajax 주문서 생성 후 장바구니 orderId 넣기
+
+      }
+      function checkCart() {
+        var totalCount = 0;
+        var totalPrice = 0;
+        var paymentPrice = 0;
+        $('.cart__item:not(".cart__item--header")').each(function(idx, el) {
+          var isChecked = $(el).find('.item-check').is(':checked');
+          var is_paymentItem = $(el).find('.is_paymentItem').is(':checked');
+
+          var count = $(el).find('.cnt').val();
+          var price = $(el).find('.price-value').val();
+
+          $(el).find('.total-price-value').val(numberWithCommas(count * price));
+          $(el).find('.total-price-text').text(numberWithCommas(count * price));
+
+          if(isChecked) {
+            totalCount += parseInt(count, 10);
+            totalPrice += parseInt(price, 10) * parseInt(count, 10);
+
+            if(is_paymentItem) {
+              paymentPrice += parseInt(price, 10) * parseInt(count, 10);
+            }
+          }
+        });
+
+
+        $('#allCount').text(numberWithCommas(totalCount));
+        $('#allPrice').text('￦ '+ numberWithCommas(totalPrice));
+        $('#allPricePlusDeliver').text('￦ '+ numberWithCommas(totalPrice + 2500));
+
+        $('#paymentPrice').text('￦ '+ numberWithCommas(paymentPrice))
+        $('#next-paymentPrice').text('￦ '+ numberWithCommas(totalPrice - paymentPrice));
+
+        $('#result-total-price').val(totalPrice)
+        $('#result-paid-price').val(paymentPrice)
+        $('#result-balance-price').val(totalPrice - paymentPrice)
+      };
+
+      $(function(){
+        $('#all').on('change', function(){
+          $('[type="checkbox"]').prop('checked', $(this).prop("checked"));
+          checkCart();
+        });
+        $('.item-check').on('change', function(){
+          checkCart();
+        });
+
+        $('.actions .btn').on('click', function(){
+          var that = $(this);
+          if(confirm('삭제 하시겠습니까?')) {
+            $.ajax({
+              type: 'POST',
+              url: '/cart/delete/' + that.data('id'),
+            }).done(function(res){
+                if(res.success) {
+                  var cnt = that.parents('.cart__item').find('.cnt').val();
+                  var count = $('#cart-count').text();
+                  $('#cart-count').text(parseInt(count, 10) - parseInt(cnt, 10));
+
+                  that.parents('.cart__item').remove();
+                  checkCart();
+                }
+            }).fail(function(error) {
+              alert('관리자에게 문의주세요.')
+            }).always(function(res){
+            });
+          };
+        });
+
+
+        $(document).on('click', '.inc', function(){
+          var value = $(this).parents('.form').find('.cnt').val();
+          var formData = new FormData();
+          var that = $(this);
+          formData.append('quantity', parseInt(value, 10) + 1);
+          $.ajax({
+            url: '/cart/quantity/' + $(this).data('cartId'),
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false
+          }).done(function(res){
+            if(res.success) {
+              // that.parents('.form').find('.cnt').val(parseInt(value, 10) + 1);
+              // checkCart();
+              alert('변경되었습니다.')
+              location.reload();
+            }
+          }).fail(function(error) {
+            console.log(error);
+            alert('관리자에게 문의주세요.')
+          }).always(function(res){
+            var count = $('#cart-count').text();
+            $('#cart-count').text(parseInt(count, 10) + 1);
+          });
+        });
+        $(document).on('click', '.dec', function(){
+          var value = $(this).parents('.form').find('.cnt').val();
+          if(parseInt(value, 10) - 1 < 1) {
+            alert('1보다 작을 수는 없습니다.')
+          } else {
+            var formData = new FormData();
+            var that = $(this);
+            formData.append('quantity', parseInt(value, 10) - 1);
+            $.ajax({
+              url: '/cart/quantity/' + $(this).data('cartId'),
+              type: 'POST',
+              data: formData,
+              contentType: false,
+              processData: false
+            }).done(function (res) {
+              if (res.success) {
+                alert('변경되었습니다.')
+                location.reload();
+              }
+            }).fail(function (error) {
+              console.log(error);
+              alert('관리자에게 문의주세요.')
+            }).always(function (res) {
+              var count = $('#cart-count').text();
+              $('#cart-count').text(parseInt(count, 10) - 1);
+            });
+          }
+        });
+        // 전체삭제
+        $('#clear').on('click', function(){
+          if( $('.cart__item:not(".cart__item--header")').length === 0 ) {
+            alert('장바구니에 담긴 상품이 없습니다.');
+            return;
+          }
+          if(!confirm('장바구니에 담긴 상품들을 모두 삭제하시겠습니까?')) {
+            return;
+          }
+          $.ajax({
+            url: '/cart/clear',
+            type: 'POST',
+          }).done(function(res) {
+            if(res.success) {
+              alert('전체 삭제 되었습니다.');
+              location.reload();
+            } else {
+              alert('전체 삭제를 실패했습니다.');
+            }
+          }).fail(function(){
+            alert('전체 삭제를 실패했습니다.');
+          })
+        })
+      })
+    </script>
+{% endblock %}
+

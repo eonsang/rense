@@ -1,0 +1,82 @@
+<header class="header">
+    <div class="wrap">
+        
+        <button class="header__menu" onclick="$('#nav').toggleClass('active');">
+            메뉴
+        </button>
+        <a href="/" class="header__logo">
+            <img src="/static/images/logo200.png" alt="">
+        </a>
+        <a href="/cart" class="header__cart" id="cart-count" title="장바구니">
+            {% set count = 0 %}
+            {% for item in cartCount %}
+                {% set count = count + item.quantity %}
+            {% endfor %}
+
+            {{ count }}
+        </a>
+        {% if not loginUser %}
+            <style>
+
+                .btnlogin{order: 3;background:#bfbdbd;line-height: 35px;color:#fff;border-radius: 5px;font-size: 14px;padding:0 10px;margin-left: 10px;display: none;}
+                @media screen and (max-width: 1200px) {
+                    .btnlogin{display: block;}
+                }
+            </style>
+            <a class="btnlogin" href={{ routes.accounts + routes.login }}>로그인</a>
+        {% endif %}
+    </div>
+</header>
+
+<div class="nav" id="nav">
+    <div class="nav__header">
+        <button class="header__menu" onclick="$('#nav').removeClass('active');">
+            메뉴
+        </button>
+    </div>
+    <div class="nav__body">
+        {% if not loginUser %}
+            <a href={{ routes.accounts + routes.login }}>로그인</a>
+            <a href={{ routes.accounts + routes.signup }}>회원가입</a>
+        {% else %}
+            <div class="row flex-col">
+                <h2>주문관련</h2>
+                <div class="depth">
+                    <a href="/cart">장바구니</a>
+                    <a href="/order">주문내역</a>
+                </div>
+            </div>
+            <div class="row flex-col">
+                <h2>상품</h2>
+                <div class="depth">
+                    <a href="/">전체</a>
+                    {% for category in navCategories %}
+                        <a href="/?depth1={{ category.id }}">{{ category.name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="row flex-col">
+                <h2>고객센터</h2>
+                <div class="depth">
+                    <a href="/board/notice">공지사항</a>
+                    <a href="/qna">1:1 문의</a>
+                </div>
+            </div>
+
+            <div class="row flex-col">
+                <h2>회원정보</h2>
+                <div class="depth">
+                    <a href={{ routes.mypage }}>회원정보</a>
+                    <a href={{ routes.accounts + routes.logout }}>로그아웃</a>
+                </div>
+            </div>
+
+            {% if loginUser.role === 'admin' or loginUser.role === 'manager'  %}
+                <a href={{ routes.admin }}>관리자사이트</a>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+
